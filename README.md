@@ -1,59 +1,77 @@
-# Eclipse BaSyx Python SDK
+# BaSyx Security Layer
 
-(formerly known as PyI40AAS – Python Industry 4.0 Asset Administration Shell)
+[![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![GitHub Issues](https://img.shields.io/github/issues/hadijannat/basyx-security-layer)](https://github.com/hadijannat/basyx-security-layer/issues)
 
-The Eclipse BaSyx Python project focuses on providing a Python implementation of the Asset Administration Shell (AAS) 
-for Industry 4.0 Systems. 
-These are the currently implemented specifications:
-
-| Specification                         | Version                                                                                                                                                                         |
-|---------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Part 1: Metamodel                     | [v3.0.1 (01001-3-1)](https://industrialdigitaltwin.org/wp-content/uploads/2024/06/IDTA-01001-3-0-1_SpecificationAssetAdministrationShell_Part1_Metamodel.pdf)                   |
-| Schemata (JSONSchema, XSD)            | [v3.0.8 (IDTA-01001-3-0-1_schemasV3.0.8)](https://github.com/admin-shell-io/aas-specs/releases/tag/IDTA-01001-3-0-1_schemasV3.0.8)                                              |
-| Part 2: API                           | [v3.0 (01002-3-0)](https://industrialdigitaltwin.org/en/wp-content/uploads/sites/2/2023/06/IDTA-01002-3-0_SpecificationAssetAdministrationShell_Part2_API_.pdf)                 |
-| Part 3a: Data Specification IEC 61360 | [v3.0 (01003-a-3-0)](https://industrialdigitaltwin.org/wp-content/uploads/2023/04/IDTA-01003-a-3-0_SpecificationAssetAdministrationShell_Part3a_DataSpecification_IEC61360.pdf) |
-| Part 5: Package File Format (AASX)    | [v3.0 (01005-3-0)](https://industrialdigitaltwin.org/wp-content/uploads/2023/04/IDTA-01005-3-0_SpecificationAssetAdministrationShell_Part5_AASXPackageFileFormat.pdf)           |
+A security implementation layer for the Eclipse BaSyx Python SDK, providing robust security features for Asset Administration Shell (AAS) implementations.
 
 ## Features
-This repository is structured into separate packages. 
-The `sdk` directory provides the AAS metamodel as Python objects and fundamental functionalities to handle AAS.
-The `server` implements a specification-compliant Docker HTTP server for AASs.
-The `compliance_tool` is to be determined.
 
-* [SDK](./sdk/README.md):
-  * Modelling of AASs as Python objects
-  * Reading and writing of AASX package files
-  * (De-)serialization of AAS objects into/from JSON and XML
-  * Storing of AAS objects in CouchDB, Backend infrastructure for easy expansion 
-  * Compliance checking of AAS XML and JSON files
-* [Server](./server/README.md): Docker Image of a specification compliant HTTP Server implementing the interfaces:
-  * Asset Administration Shell Repository
-  * Submodel Repository
-* Compliance Tool (tbd)
+- **Role-Based Access Control (RBAC)**
+  - Fine-grained access control for AAS components
+  - Flexible role management
+  - Permission inheritance
 
-## License
+- **Security Levels**
+  - Multiple security level support
+  - Configurable security policies
+  - Context-aware access control
 
-The BaSyx Python SDK project is licensed under the terms of the MIT License.
+- **Secure AAS Wrappers**
+  - Secure Element implementation
+  - Protected Submodel access
+  - Controlled AAS operations
 
-SPDX-License-Identifier: MIT
+## Installation
 
-For more information, especially considering the licenses of included third-party works, please consult the `NOTICE`
-file.
+```bash
+pip install basyx-security
+```
 
-## Release Schedule
+## Quick Start
 
-The Eclipse BaSyx-Python SDK Team evaluates bi-monthly the newly added commits to the main branch towards the need 
-of releasing a new version.
-If decided the changes warrant a release, it is initiated, using semantic versioning for the new release number.
-If the changes do not warrant a release, the decision is postponed to the next meeting.
+```python
+from basyx_security import SecurityManager, SecurityLevel, AccessRight
+from basyx_security.aas_wrapper import SecureAAS
 
-Additionally, security fixes may be released at any point.
+# Create a security manager
+security_manager = SecurityManager()
+
+# Set up security policies
+security_manager.set_security_policy(
+    'https://example.com/aas/sensor1',
+    SecurityLevel.MEDIUM
+)
+
+# Set up role permissions
+security_manager.set_role_permissions(
+    'admin',
+    'https://example.com/aas/sensor1',
+    AccessRight.FULL
+)
+
+# Create secure AAS instance
+secure_aas = SecureAAS(aas_instance, security_manager)
+```
+
+## Documentation
+
+For detailed documentation, please visit our [documentation page](docs/).
+
+## Examples
+
+Check out our [examples directory](examples/) for more detailed examples of using the security layer.
 
 ## Contributing
 
-For contributing with issues and code, please see our [Contribution Guideline](./CONTRIBUTING.md).
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
-### Eclipse Contributor Agreement
+## License
 
-To contribute code to this project you need to sign the [Eclipse Contributor Agreement (ECA)](https://www.eclipse.org/legal/ECA.php).
-This is done by creating an Eclipse account for your git e-mail address and then submitting the following form: https://accounts.eclipse.org/user/eca
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+
+## Related Projects
+
+- [Eclipse BaSyx Python SDK](https://github.com/eclipse-basyx/basyx-python-sdk)
+- [Eclipse BaSyx](https://www.eclipse.org/basyx/)

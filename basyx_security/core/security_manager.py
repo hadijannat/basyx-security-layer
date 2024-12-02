@@ -3,7 +3,7 @@ Security manager implementation for BaSyx Security Layer.
 """
 
 from datetime import datetime, timezone
-from typing import Dict, Optional, Set
+from typing import Dict
 
 from .audit import AuditEvent, AuditLog
 from .enums import AccessRight, SecurityLevel

@@ -3,8 +3,7 @@ Tests for the BaSyx Security Layer.
 """
 
 import time
-from datetime import datetime, timedelta, timezone
-from typing import Dict
+from datetime import datetime, timezone
 
 import pytest
 from basyx.aas import model
@@ -14,14 +13,13 @@ from basyx_security import (
     AuditEvent,
     AuditLog,
     SecureAAS,
-    SecurityContext,
     SecurityLevel,
     SecurityManager,
     create_security_context,
 )
 from basyx_security.aas_wrapper.provider import DictProvider
 from basyx_security.core.rate_limiter import RateLimit, RateLimiter, RateLimitExceeded
-from basyx_security.core.session import Session, SessionManager
+from basyx_security.core.session import SessionManager
 
 
 def create_test_aas():

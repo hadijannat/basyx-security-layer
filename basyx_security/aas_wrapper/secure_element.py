@@ -2,7 +2,7 @@
 Secure element wrapper implementation for BaSyx Security Layer.
 """
 
-from typing import Any, Optional
+from typing import Any
 
 from basyx.aas import model
 

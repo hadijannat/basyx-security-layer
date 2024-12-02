@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # BaSyx Security Layer
 
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/downloads/)
@@ -75,3 +76,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 - [Eclipse BaSyx Python SDK](https://github.com/eclipse-basyx/basyx-python-sdk)
 - [Eclipse BaSyx](https://www.eclipse.org/basyx/)
+=======
+# basyx-security-layer
+Security implementation layer for Eclipse BaSyx Python SDK
+>>>>>>> b2d0b60f632d294a17a82de6ad1ba9bc59485f00

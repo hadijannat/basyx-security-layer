@@ -2,11 +2,10 @@ import os
 import pathlib
 import sys
 
-from basyx.aas import model, adapter
+from basyx.aas import adapter, model
 from basyx.aas.adapter import aasx
-
-from basyx.aas.backend.local_file import LocalFileObjectStore
 from basyx.aas.adapter.http import WSGIApp
+from basyx.aas.backend.local_file import LocalFileObjectStore
 
 storage_path = os.getenv("STORAGE_PATH", "/storage")
 storage_type = os.getenv("STORAGE_TYPE", "LOCAL_FILE_READ_ONLY")

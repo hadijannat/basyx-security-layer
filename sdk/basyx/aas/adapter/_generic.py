@@ -9,7 +9,7 @@ The dicts defined in this module are used in the json and xml modules to transla
 implementation to the respective string and vice versa.
 """
 import os
-from typing import BinaryIO, Dict, IO, Type, Union
+from typing import IO, BinaryIO, Dict, Type, Union
 
 from basyx.aas import model
 

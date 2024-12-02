@@ -17,7 +17,7 @@ To Generate [identifier]:  -> Try:
 import abc
 import re
 import uuid
-from typing import Optional, Dict, Union, Set
+from typing import Dict, Optional, Set, Union
 
 from .. import model
 

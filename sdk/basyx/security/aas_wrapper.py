@@ -8,10 +8,12 @@ This module provides secure wrappers for AAS components, implementing:
 - Security context validation
 """
 
-from typing import Optional, Dict, Any, Set
-from basyx.aas import model
-from .core import SecurityContext, SecurityManager, AccessRight, SecurityViolation
 import logging
+from typing import Any, Dict, Optional, Set
+
+from basyx.aas import model
+
+from .core import AccessRight, SecurityContext, SecurityManager, SecurityViolation
 
 
 class SecureElement:

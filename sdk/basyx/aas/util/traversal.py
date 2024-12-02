@@ -8,7 +8,7 @@
 A module with helper functions for traversing AAS object structures.
 """
 
-from typing import Union, Iterator
+from typing import Iterator, Union
 
 from .. import model
 

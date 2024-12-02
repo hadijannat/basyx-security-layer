@@ -2,12 +2,12 @@
 Security manager implementation for BaSyx Security Layer.
 """
 
-from typing import Dict, Optional, Set
 from datetime import datetime, timezone
+from typing import Dict, Optional, Set
 
-from .enums import SecurityLevel, AccessRight
+from .audit import AuditEvent, AuditLog
+from .enums import AccessRight, SecurityLevel
 from .security_context import SecurityContext
-from .audit import AuditLog, AuditEvent
 
 
 class SecurityViolation(Exception):

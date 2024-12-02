@@ -8,8 +8,8 @@ and XML files.
 
 import json
 
-from basyx.aas import model
 import basyx.aas.adapter.xml
+from basyx.aas import model
 
 # 'Details of the Asset Administration Shell' specifies multiple official serialization formats for AAS data. In this
 # tutorial, we show how the Eclipse BaSyx Python library can be used to serialize AAS objects into JSON or XML and to

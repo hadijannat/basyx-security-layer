@@ -11,20 +11,30 @@ in a CouchDB.
 The :class:`~.CouchDBBackend` takes care of updating and committing objects from and to the CouchDB, while the
 :class:`~CouchDBObjectStore` handles adding, deleting and otherwise managing the AAS objects in a specific CouchDB.
 """
+import json
+import logging
 import threading
-import weakref
-from typing import List, Dict, Any, Optional, Iterator, Iterable, Union, Tuple, MutableMapping
+import urllib.error
 import urllib.parse
 import urllib.request
-import urllib.error
-import logging
-import json
-import urllib3  # type: ignore
+import weakref
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    MutableMapping,
+    Optional,
+    Tuple,
+    Union,
+)
 
-from . import backends
-from ..adapter.json import json_serialization, json_deserialization
+import urllib3  # type: ignore
 from basyx.aas import model
 
+from ..adapter.json import json_deserialization, json_serialization
+from . import backends
 
 logger = logging.getLogger(__name__)
 _http_pool_manager = urllib3.PoolManager()

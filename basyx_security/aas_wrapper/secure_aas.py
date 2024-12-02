@@ -3,16 +3,16 @@ Secure AAS wrapper implementation for BaSyx Security Layer.
 """
 
 from typing import Dict, Optional
+
 from basyx.aas import model
-from ..core import SecurityContext, SecurityManager, AccessRight, SecurityViolation
-from .secure_submodel import SecureSubmodel
+
+from ..core import AccessRight, SecurityContext, SecurityManager, SecurityViolation
 from .provider import SubmodelProvider
+from .secure_submodel import SecureSubmodel
 
 
 class SecureAAS:
-    """
-    Security wrapper for Asset Administration Shells.
-    """
+    """Security wrapper for Asset Administration Shells."""
 
     def __init__(
         self,

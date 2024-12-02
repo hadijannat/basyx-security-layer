@@ -34,23 +34,35 @@ import contextlib
 import json
 import logging
 import pprint
-from typing import Dict, Callable, ContextManager, TypeVar, Type, List, IO, Optional, Set, get_args
+from typing import (
+    IO,
+    Callable,
+    ContextManager,
+    Dict,
+    List,
+    Optional,
+    Set,
+    Type,
+    TypeVar,
+    get_args,
+)
 
 from basyx.aas import model
+
 from .._generic import (
-    MODELLING_KIND_INVERSE,
     ASSET_KIND_INVERSE,
-    KEY_TYPES_INVERSE,
+    DIRECTION_INVERSE,
     ENTITY_TYPES_INVERSE,
     IEC61360_DATA_TYPES_INVERSE,
     IEC61360_LEVEL_TYPES_INVERSE,
     KEY_TYPES_CLASSES_INVERSE,
-    REFERENCE_TYPES_INVERSE,
-    DIRECTION_INVERSE,
-    STATE_OF_EVENT_INVERSE,
+    KEY_TYPES_INVERSE,
+    MODELLING_KIND_INVERSE,
     QUALIFIER_KIND_INVERSE,
-    PathOrIO,
+    REFERENCE_TYPES_INVERSE,
+    STATE_OF_EVENT_INVERSE,
     Path,
+    PathOrIO,
 )
 
 logger = logging.getLogger(__name__)

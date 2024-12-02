@@ -12,7 +12,6 @@ import unittest.mock
 from basyx.aas.backend import local_file
 from basyx.aas.examples.data.example_aas import *
 
-
 store_path: str = os.path.dirname(__file__) + "/local_file_test_folder"
 source_core: str = "file://localhost/{}/".format(store_path)
 

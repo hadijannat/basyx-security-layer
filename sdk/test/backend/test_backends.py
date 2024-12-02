@@ -5,8 +5,8 @@
 #
 # SPDX-License-Identifier: MIT
 
-from typing import List
 import unittest
+from typing import List
 
 from basyx.aas.backend import backends
 from basyx.aas.model import Referable

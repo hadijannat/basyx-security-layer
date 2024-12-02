@@ -4,10 +4,10 @@ Session management implementation for BaSyx Security Layer.
 
 import time
 import uuid
-from typing import Dict, Optional, Set
 from dataclasses import dataclass
-from threading import Lock, Thread
 from datetime import datetime, timedelta, timezone
+from threading import Lock, Thread
+from typing import Dict, Optional, Set
 
 
 @dataclass

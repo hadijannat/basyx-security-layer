@@ -3,8 +3,10 @@ Secure element wrapper implementation for BaSyx Security Layer.
 """
 
 from typing import Any, Optional
+
 from basyx.aas import model
-from ..core import SecurityContext, SecurityManager, AccessRight, SecurityViolation
+
+from ..core import AccessRight, SecurityContext, SecurityManager, SecurityViolation
 
 
 class SecureElement:

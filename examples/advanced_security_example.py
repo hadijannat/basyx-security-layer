@@ -3,9 +3,16 @@ Advanced security example demonstrating additional features of the BaSyx Securit
 """
 
 from datetime import datetime, timedelta
+
 import jwt
 from basyx.aas import model
-from basyx_security import SecurityManager, SecurityLevel, AccessRight, create_security_context
+
+from basyx_security import (
+    AccessRight,
+    SecurityLevel,
+    SecurityManager,
+    create_security_context,
+)
 from basyx_security.aas_wrapper import SecureAAS
 
 # Secret key for JWT tokens (in production, use a secure key management system)

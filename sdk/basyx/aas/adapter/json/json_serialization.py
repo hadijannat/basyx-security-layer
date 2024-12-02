@@ -30,10 +30,20 @@ import base64
 import contextlib
 import inspect
 import io
-from typing import ContextManager, List, Dict, Optional, TextIO, Type, Callable, get_args
 import json
+from typing import (
+    Callable,
+    ContextManager,
+    Dict,
+    List,
+    Optional,
+    TextIO,
+    Type,
+    get_args,
+)
 
 from basyx.aas import model
+
 from .. import _generic
 
 

@@ -11,9 +11,18 @@ This module implements Registries for the AAS, in order to enable resolving glob
 """
 
 import abc
-from typing import MutableSet, Iterator, Generic, TypeVar, Dict, List, Optional, Iterable
+from typing import (
+    Dict,
+    Generic,
+    Iterable,
+    Iterator,
+    List,
+    MutableSet,
+    Optional,
+    TypeVar,
+)
 
-from .base import Identifier, Identifiable
+from .base import Identifiable, Identifier
 
 
 class AbstractObjectProvider(metaclass=abc.ABCMeta):

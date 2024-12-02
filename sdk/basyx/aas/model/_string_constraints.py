@@ -28,9 +28,7 @@ The following types aliased in the :mod:`~basyx.aas.model.base` module are const
 """
 
 import re
-
 from typing import Callable, Optional, Type, TypeVar
-
 
 _T = TypeVar("_T")
 AASD130_RE = re.compile("[\x09\x0A\x0D\x20-\uD7FF\uE000-\uFFFD\U00010000-\U0010FFFF]*")

@@ -3,14 +3,15 @@ Test cases for the BaSyx security implementation.
 """
 
 import unittest
+
 from basyx.aas import model
 from basyx.security import (
-    SecurityManager,
-    SecurityLevel,
     AccessRight,
-    create_security_context,
     SecureAAS,
+    SecurityLevel,
+    SecurityManager,
     SecurityViolation,
+    create_security_context,
 )
 
 

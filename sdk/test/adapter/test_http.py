@@ -25,19 +25,17 @@ and offer an automatically generated python unittest TestCase.
 # TODO: add id_short format to schemata
 
 import os
-import random
 import pathlib
+import random
 import urllib.parse
+from typing import Set
 
-import schemathesis
 import hypothesis.strategies
-
+import schemathesis
 from basyx.aas import model
 from basyx.aas.adapter.aasx import DictSupplementaryFileContainer
 from basyx.aas.adapter.http import WSGIApp
 from basyx.aas.examples.data.example_aas import create_full_example
-
-from typing import Set
 
 
 def _encode_and_quote(identifier: model.Identifier) -> str:

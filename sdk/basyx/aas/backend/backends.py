@@ -21,7 +21,7 @@ Then, the Backend class needs to be registered to handle update/commit requests 
 """
 import abc
 import re
-from typing import List, Dict, Type, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List, Type
 
 if TYPE_CHECKING:
     from ..model import Referable

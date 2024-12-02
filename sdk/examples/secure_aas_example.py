@@ -4,11 +4,11 @@ Example demonstrating the secure AAS implementation.
 
 from basyx.aas import model
 from basyx.security import (
-    SecurityManager,
-    SecurityLevel,
     AccessRight,
-    create_security_context,
     SecureAAS,
+    SecurityLevel,
+    SecurityManager,
+    create_security_context,
 )
 
 

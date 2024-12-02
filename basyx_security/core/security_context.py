@@ -3,8 +3,8 @@ Security context implementation for BaSyx Security Layer.
 """
 
 from dataclasses import dataclass
-from typing import Set, Optional
 from datetime import datetime, timezone
+from typing import Optional, Set
 
 from .enums import SecurityLevel
 

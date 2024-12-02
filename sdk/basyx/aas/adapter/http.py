@@ -40,26 +40,45 @@ import binascii
 import datetime
 import enum
 import io
-import json
 import itertools
+import json
+from typing import (
+    Callable,
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+)
 
-from lxml import etree
 import werkzeug.exceptions
 import werkzeug.routing
 import werkzeug.urls
 import werkzeug.utils
+from basyx.aas import model
+from lxml import etree
+from werkzeug.datastructures import FileStorage
 from werkzeug.exceptions import BadRequest, Conflict, NotFound, UnprocessableEntity
 from werkzeug.routing import MapAdapter, Rule, Submount
 from werkzeug.wrappers import Request, Response
-from werkzeug.datastructures import FileStorage
 
-from basyx.aas import model
-from ._generic import XML_NS_MAP
-from .xml import XMLConstructables, read_aas_xml_element, xml_serialization, object_to_xml_element
-from .json import AASToJsonEncoder, StrictAASFromJsonDecoder, StrictStrippedAASFromJsonDecoder
 from . import aasx
-
-from typing import Callable, Dict, Iterable, Iterator, List, Optional, Type, TypeVar, Union, Tuple
+from ._generic import XML_NS_MAP
+from .json import (
+    AASToJsonEncoder,
+    StrictAASFromJsonDecoder,
+    StrictStrippedAASFromJsonDecoder,
+)
+from .xml import (
+    XMLConstructables,
+    object_to_xml_element,
+    read_aas_xml_element,
+    xml_serialization,
+)
 
 
 @enum.unique
@@ -1644,8 +1663,8 @@ class WSGIApp:
 
 
 if __name__ == "__main__":
-    from werkzeug.serving import run_simple
     from basyx.aas.examples.data.example_aas import create_full_example
+    from werkzeug.serving import run_simple
 
     run_simple(
         "localhost",

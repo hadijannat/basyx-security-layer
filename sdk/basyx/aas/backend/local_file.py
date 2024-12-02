@@ -11,18 +11,18 @@ in local files.
 The :class:`~.LocalFileBackend` takes care of updating and committing objects from and to the files, while the
 :class:`~LocalFileObjectStore` handles adding, deleting and otherwise managing the AAS objects in a specific Directory.
 """
-from typing import List, Iterator, Iterable, Union
-import logging
-import json
-import os
 import hashlib
+import json
+import logging
+import os
 import threading
 import weakref
+from typing import Iterable, Iterator, List, Union
 
-from . import backends
-from ..adapter.json import json_serialization, json_deserialization
 from basyx.aas import model
 
+from ..adapter.json import json_deserialization, json_serialization
+from . import backends
 
 logger = logging.getLogger(__name__)
 

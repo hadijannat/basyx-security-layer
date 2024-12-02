@@ -4,7 +4,7 @@ Tests for the BaSyx Security Layer.
 
 import time
 import pytest
-from datetime import datetime, UTC, timedelta
+from datetime import datetime, timezone, timedelta
 from typing import Dict
 from basyx.aas import model
 from basyx_security import (
@@ -81,7 +81,7 @@ def test_audit_logging():
     
     # Create test event
     event = AuditEvent(
-        timestamp=datetime.now(UTC),
+        timestamp=datetime.now(timezone.utc),
         event_type='access_attempt',
         user_id='test_user',
         resource_id='test_resource',
@@ -158,7 +158,7 @@ def test_secure_aas():
 def test_rate_limiter():
     """Test rate limiter functionality."""
     limiter = RateLimiter()
-    limit = RateLimit(requests=2, window_seconds=1, block_seconds=2)
+    limit = RateLimit(requests=2, window_seconds=1, block_seconds=2)  # Use shorter block time for testing
     limiter.add_limit('test_resource', limit)
     
     # Test successful requests
@@ -168,14 +168,14 @@ def test_rate_limiter():
     # Test rate limit exceeded
     with pytest.raises(RateLimitExceeded) as exc_info:
         limiter.check_rate_limit('test_resource', 'user1')
-    assert exc_info.value.wait_time >= 1.0
+    assert exc_info.value.wait_time >= 1.0  # Block time should be around 2 seconds
     
     # Test different users (should work)
     limiter.check_rate_limit('test_resource', 'user2')
     
     # Test reset after block and window
-    time.sleep(2.1)
-    limiter.check_rate_limit('test_resource', 'user1')
+    time.sleep(2.1)  # Wait for block to expire
+    limiter.check_rate_limit('test_resource', 'user1')  # Should work again
 
 def test_session_management():
     """Test session management functionality."""

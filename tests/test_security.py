@@ -2,8 +2,9 @@
 Tests for the BaSyx Security Layer.
 """
 
+import time
 import pytest
-from datetime import datetime, UTC
+from datetime import datetime, UTC, timedelta
 from typing import Dict
 from basyx.aas import model
 from basyx_security import (
@@ -16,6 +17,8 @@ from basyx_security import (
     AuditLog,
     AuditEvent
 )
+from basyx_security.core.rate_limiter import RateLimiter, RateLimit, RateLimitExceeded
+from basyx_security.core.session import SessionManager, Session
 from basyx_security.aas_wrapper.provider import DictProvider
 
 def create_test_aas():
@@ -150,4 +153,52 @@ def test_secure_aas():
     
     # Test operator write access (should fail)
     with pytest.raises(Exception):
-        temp_element.set_value(operator_context, 26.0) 
+        temp_element.set_value(operator_context, 26.0)
+
+def test_rate_limiter():
+    """Test rate limiter functionality."""
+    limiter = RateLimiter()
+    limit = RateLimit(requests=2, window_seconds=1, block_seconds=2)
+    limiter.add_limit('test_resource', limit)
+    
+    # Test successful requests
+    limiter.check_rate_limit('test_resource', 'user1')
+    limiter.check_rate_limit('test_resource', 'user1')
+    
+    # Test rate limit exceeded
+    with pytest.raises(RateLimitExceeded) as exc_info:
+        limiter.check_rate_limit('test_resource', 'user1')
+    assert exc_info.value.wait_time >= 1.0
+    
+    # Test different users (should work)
+    limiter.check_rate_limit('test_resource', 'user2')
+    
+    # Test reset after block and window
+    time.sleep(2.1)
+    limiter.check_rate_limit('test_resource', 'user1')
+
+def test_session_management():
+    """Test session management functionality."""
+    session_manager = SessionManager(session_timeout_minutes=1/60)  # 1 second timeout
+    
+    # Create session
+    session = session_manager.create_session('user1', {'admin'})
+    assert session is not None
+    assert session.user_id == 'user1'
+    assert 'admin' in session.roles
+    
+    # Get session
+    retrieved_session = session_manager.get_session(session.session_id)
+    assert retrieved_session is not None
+    assert retrieved_session.user_id == 'user1'
+    
+    # Test session expiry
+    time.sleep(1.1)  # Wait for session to expire
+    expired_session = session_manager.get_session(session.session_id)
+    assert expired_session is None
+    
+    # Test session invalidation
+    new_session = session_manager.create_session('user2', {'user'})
+    session_manager.invalidate_session(new_session.session_id)
+    assert session_manager.get_session(new_session.session_id) is None
+    

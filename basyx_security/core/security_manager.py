@@ -2,171 +2,166 @@
 Security manager implementation for BaSyx Security Layer.
 """
 
-from typing import Dict, Set, Optional, Any
+from typing import Dict, Optional, Set
+from datetime import datetime, UTC
+
 from .enums import SecurityLevel, AccessRight
 from .security_context import SecurityContext
-from .audit import SecurityAuditor
+from .audit import AuditLog, AuditEvent
 
 class SecurityViolation(Exception):
-    """Raised when a security violation occurs."""
+    """Raised when a security check fails."""
     pass
 
 class SecurityManager:
     """
-    Manages security policies and access control for AAS elements.
+    Manages security policies and access control.
     """
     
-    def __init__(self, audit_log_file: Optional[str] = None):
+    def __init__(self):
+        """Initialize the security manager."""
         self._security_policies: Dict[str, SecurityLevel] = {}
         self._role_permissions: Dict[str, Dict[str, AccessRight]] = {}
-        self._auditor = SecurityAuditor(
-            audit_log_file or "security_audit.log"
-        )
-        
+        self._audit_log = AuditLog()
+    
     def set_security_policy(
         self,
         resource_id: str,
-        level: SecurityLevel,
-        admin_context: Optional[SecurityContext] = None
+        level: SecurityLevel
     ) -> None:
         """
         Set the security level required for a resource.
         
         Args:
-            resource_id: Identifier of the resource
+            resource_id: ID of the resource
             level: Required security level
-            admin_context: Optional context of the admin making the change
         """
         self._security_policies[resource_id] = level
         
-        # Audit the policy change
-        self._auditor.log_policy_change(
-            user_id=admin_context.user_id if admin_context else "SYSTEM",
+        self._audit_log.log_event(AuditEvent(
+            timestamp=datetime.now(UTC),
+            event_type='policy_change',
+            user_id='SYSTEM',
             resource_id=resource_id,
-            action="set_security_policy",
-            details={
-                "security_level": level.name
-            }
-        )
-        
+            action='set_security_level',
+            status='success',
+            details={'level': level.name}
+        ))
+    
     def set_role_permissions(
         self,
         role: str,
         resource_id: str,
-        access_right: AccessRight,
-        admin_context: Optional[SecurityContext] = None
+        access: AccessRight
     ) -> None:
         """
-        Set permissions for a role on a specific resource.
+        Set permissions for a role on a resource.
         
         Args:
             role: Role name
-            resource_id: Identifier of the resource
-            access_right: Access right to grant
-            admin_context: Optional context of the admin making the change
+            resource_id: ID of the resource
+            access: Access rights to grant
         """
         if role not in self._role_permissions:
             self._role_permissions[role] = {}
-        self._role_permissions[role][resource_id] = access_right
+            
+        self._role_permissions[role][resource_id] = access
         
-        # Audit the permission change
-        self._auditor.log_policy_change(
-            user_id=admin_context.user_id if admin_context else "SYSTEM",
+        self._audit_log.log_event(AuditEvent(
+            timestamp=datetime.now(UTC),
+            event_type='policy_change',
+            user_id='SYSTEM',
             resource_id=resource_id,
-            action="set_role_permissions",
+            action='set_role_permissions',
+            status='success',
             details={
-                "role": role,
-                "access_right": access_right.name
+                'role': role,
+                'access': access.name
             }
-        )
-        
+        ))
+    
     def check_access(
         self,
         context: SecurityContext,
         resource_id: str,
-        required_right: AccessRight
+        required_access: AccessRight
     ) -> bool:
         """
-        Check if the security context has sufficient access rights.
+        Check if a security context has the required access to a resource.
         
         Args:
-            context: Security context of the request
-            resource_id: Identifier of the resource
-            required_right: Required access right
+            context: Security context to check
+            resource_id: ID of the resource
+            required_access: Required access level
             
         Returns:
-            bool: True if access is granted, False otherwise
+            True if access is granted
             
         Raises:
-            SecurityViolation: If security requirements are not met
+            SecurityViolation: If access is denied
         """
-        try:
-            # Check security level
-            if resource_id in self._security_policies:
-                required_level = self._security_policies[resource_id]
-                if context.security_level.value < required_level.value:
-                    raise SecurityViolation(
-                        f"Insufficient security level. Required: {required_level}, "
-                        f"Provided: {context.security_level}"
-                    )
-            
-            # Check role permissions
-            for role in context.roles:
-                if role in self._role_permissions:
-                    role_perms = self._role_permissions[role]
-                    if resource_id in role_perms:
-                        granted_right = role_perms[resource_id]
-                        if granted_right == AccessRight.FULL:
-                            self._audit_access_attempt(
-                                context, resource_id, required_right, "success"
-                            )
-                            return True
-                        if granted_right.value >= required_right.value:
-                            self._audit_access_attempt(
-                                context, resource_id, required_right, "success"
-                            )
-                            return True
-            
-            # Access denied
-            self._audit_access_attempt(
-                context, resource_id, required_right, "failure",
-                {"reason": "insufficient_permissions"}
-            )
-            return False
-            
-        except SecurityViolation as e:
-            # Audit the security violation
-            self._audit_access_attempt(
-                context, resource_id, required_right, "failure",
-                {"reason": "insufficient_security_level"}
-            )
-            raise e
-        
-    def _audit_access_attempt(
-        self,
-        context: SecurityContext,
-        resource_id: str,
-        required_right: AccessRight,
-        status: str,
-        details: Optional[Dict[str, Any]] = None
-    ) -> None:
-        """Log an access attempt to the audit log."""
-        self._auditor.log_access_attempt(
-            context=context,
-            resource_id=resource_id,
-            action=required_right.name,
-            status=status,
-            details=details
+        # Check security level
+        required_level = self._security_policies.get(
+            resource_id,
+            SecurityLevel.LOW
         )
         
-    def get_security_level(self, resource_id: str) -> Optional[SecurityLevel]:
-        """Get the security level required for a resource."""
-        return self._security_policies.get(resource_id)
+        if context.security_level.value < required_level.value:
+            self._audit_log.log_event(AuditEvent(
+                timestamp=datetime.now(UTC),
+                event_type='access_denied',
+                user_id=context.user_id,
+                resource_id=resource_id,
+                action=required_access.name,
+                status='failure',
+                details={'reason': 'insufficient_security_level'}
+            ))
+            raise SecurityViolation(
+                f"Insufficient security level for {resource_id}"
+            )
         
-    def get_role_permissions(
-        self,
-        role: str,
-        resource_id: str
-    ) -> Optional[AccessRight]:
-        """Get the permissions granted to a role for a resource."""
-        return self._role_permissions.get(role, {}).get(resource_id) 
+        # Check role permissions
+        has_permission = False
+        for role in context.roles:
+            if role in self._role_permissions:
+                role_access = self._role_permissions[role].get(
+                    resource_id,
+                    AccessRight.NONE
+                )
+                if (
+                    role_access == AccessRight.FULL or
+                    role_access == required_access
+                ):
+                    has_permission = True
+                    break
+        
+        if not has_permission:
+            self._audit_log.log_event(AuditEvent(
+                timestamp=datetime.now(UTC),
+                event_type='access_denied',
+                user_id=context.user_id,
+                resource_id=resource_id,
+                action=required_access.name,
+                status='failure',
+                details={'reason': 'insufficient_permissions'}
+            ))
+            raise SecurityViolation(
+                f"Insufficient permissions for {resource_id}"
+            )
+        
+        # Log successful access
+        self._audit_log.log_event(AuditEvent(
+            timestamp=datetime.now(UTC),
+            event_type='access_granted',
+            user_id=context.user_id,
+            resource_id=resource_id,
+            action=required_access.name,
+            status='success'
+        ))
+        
+        return True
+    
+    @property
+    def audit_log(self) -> AuditLog:
+        """Get the audit log."""
+        return self._audit_log

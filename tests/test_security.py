@@ -3,6 +3,8 @@ Tests for the BaSyx Security Layer.
 """
 
 import pytest
+from datetime import datetime, UTC
+from typing import Dict
 from basyx.aas import model
 from basyx_security import (
     SecurityManager,
@@ -10,8 +12,11 @@ from basyx_security import (
     SecurityLevel,
     AccessRight,
     create_security_context,
-    SecureAAS
+    SecureAAS,
+    AuditLog,
+    AuditEvent
 )
+from basyx_security.aas_wrapper.provider import DictProvider
 
 def create_test_aas():
     """Create a test AAS for testing."""
@@ -40,7 +45,7 @@ def create_test_aas():
         submodel={model.ModelReference.from_referable(submodel)}
     )
     
-    return aas
+    return aas, {'https://example.com/sensors/temp': submodel}
 
 def test_security_manager():
     """Test basic security manager functionality."""
@@ -67,19 +72,53 @@ def test_security_manager():
     with pytest.raises(Exception):
         manager.check_access(user_context, 'resource1', AccessRight.READ)
 
+def test_audit_logging():
+    """Test audit logging functionality."""
+    audit_log = AuditLog()
+    
+    # Create test event
+    event = AuditEvent(
+        timestamp=datetime.now(UTC),
+        event_type='access_attempt',
+        user_id='test_user',
+        resource_id='test_resource',
+        action='read',
+        status='success'
+    )
+    
+    # Log event
+    audit_log.log_event(event)
+    
+    # Test retrieval
+    events = audit_log.get_events(user_id='test_user')
+    assert len(events) == 1
+    assert events[0].user_id == 'test_user'
+    assert events[0].event_type == 'access_attempt'
+    
+    # Test filtering
+    events = audit_log.get_events(event_type='other_type')
+    assert len(events) == 0
+
 def test_secure_aas():
     """Test secure AAS wrapper."""
-    aas = create_test_aas()
+    aas, submodels = create_test_aas()
     manager = SecurityManager()
+    provider = DictProvider(submodels)
     
-    # Set up security
+    # Set up security for AAS and submodel
     manager.set_security_policy('Sensor1', SecurityLevel.MEDIUM)
-    manager.set_security_policy('TempSensor', SecurityLevel.HIGH)
+    manager.set_security_policy('TempSensor', SecurityLevel.MEDIUM)
     manager.set_role_permissions('admin', 'Sensor1', AccessRight.FULL)
+    manager.set_role_permissions('operator', 'Sensor1', AccessRight.READ)
     manager.set_role_permissions('admin', 'TempSensor', AccessRight.FULL)
     manager.set_role_permissions('operator', 'TempSensor', AccessRight.READ)
     
-    secure_aas = SecureAAS(aas, manager)
+    # Set up security for submodel elements
+    manager.set_security_policy('Temperature', SecurityLevel.MEDIUM)
+    manager.set_role_permissions('admin', 'Temperature', AccessRight.FULL)
+    manager.set_role_permissions('operator', 'Temperature', AccessRight.READ)
+    
+    secure_aas = SecureAAS(aas, manager, provider)
     
     # Create contexts
     admin_context = create_security_context(

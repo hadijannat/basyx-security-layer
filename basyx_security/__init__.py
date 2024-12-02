@@ -4,13 +4,20 @@ BaSyx Security Layer
 A security implementation layer for the Eclipse BaSyx Python SDK.
 """
 
-from .core.security_manager import SecurityManager, SecurityViolation
-from .core.security_context import SecurityContext, create_security_context
-from .core.enums import SecurityLevel, AccessRight
-from .core.audit import SecurityAuditor, AuditEvent
+from .core import (
+    SecurityManager,
+    SecurityContext,
+    create_security_context,
+    SecurityLevel,
+    AccessRight,
+    SecurityViolation,
+    AuditLog,
+    AuditEvent
+)
 from .aas_wrapper.secure_aas import SecureAAS
 from .aas_wrapper.secure_submodel import SecureSubmodel
 from .aas_wrapper.secure_element import SecureElement
+from .aas_wrapper.provider import SubmodelProvider, DictProvider
 
 __version__ = "0.1.0"
 __author__ = "Hadi Jannat"
@@ -23,9 +30,11 @@ __all__ = [
     "SecurityLevel",
     "AccessRight",
     "SecurityViolation",
-    "SecurityAuditor",
+    "AuditLog",
     "AuditEvent",
     "SecureAAS",
     "SecureSubmodel",
-    "SecureElement"
+    "SecureElement",
+    "SubmodelProvider",
+    "DictProvider"
 ] 

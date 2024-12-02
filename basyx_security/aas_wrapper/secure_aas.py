@@ -6,6 +6,7 @@ from typing import Dict, Optional
 from basyx.aas import model
 from ..core import SecurityContext, SecurityManager, AccessRight, SecurityViolation
 from .secure_submodel import SecureSubmodel
+from .provider import SubmodelProvider
 
 class SecureAAS:
     """
@@ -15,20 +16,26 @@ class SecureAAS:
     def __init__(
         self,
         aas: model.AssetAdministrationShell,
-        security_manager: SecurityManager
+        security_manager: SecurityManager,
+        provider: SubmodelProvider
     ):
         self._aas = aas
         self._security_manager = security_manager
         self._secure_submodels: Dict[str, SecureSubmodel] = {}
+        self._provider = provider
         
         # Wrap all submodels
         for submodel_ref in aas.submodel:
-            submodel = submodel_ref.resolve()
-            if submodel:
-                self._secure_submodels[submodel.id_short] = SecureSubmodel(
-                    submodel,
-                    security_manager
-                )
+            if isinstance(submodel_ref, model.ModelReference):
+                key = submodel_ref.key
+                if isinstance(key, tuple):
+                    key = key[0]
+                submodel = provider.get_submodel(key.value)
+                if submodel:
+                    self._secure_submodels[submodel.id_short] = SecureSubmodel(
+                        submodel,
+                        security_manager
+                    )
                 
     def get_submodel(
         self,
@@ -92,4 +99,4 @@ class SecureAAS:
     @property
     def aas(self) -> model.AssetAdministrationShell:
         """Get the wrapped AAS."""
-        return self._aas 
+        return self._aas

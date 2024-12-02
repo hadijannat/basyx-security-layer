@@ -2,6 +2,9 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
+# Install newer setuptools first
+RUN pip install --no-cache-dir "setuptools>=70.0.0"
+
 # Install dependencies
 COPY pyproject.toml .
 COPY README.md .

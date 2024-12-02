@@ -23,7 +23,7 @@ ALLOWED_CONCEPT_DESCRIPTION_CATEGORIES: Set[str] = {
     "EVENT",
     "ENTITY",
     "APPLICATION_CLASS",
-    "QUALIFIER"
+    "QUALIFIER",
 }
 
 
@@ -54,20 +54,21 @@ class ConceptDescription(base.Identifiable, base.HasDataSpecification):
     :ivar embedded_data_specifications: List of Embedded data specification.
     :ivar extension: An extension of the element. (from
                      :class:`~basyx.aas.model.base.HasExtension`)
-"""
+    """
 
-    def __init__(self,
-                 id_: base.Identifier,
-                 is_case_of: Optional[Set[base.Reference]] = None,
-                 id_short: Optional[base.NameType] = None,
-                 display_name: Optional[base.MultiLanguageNameType] = None,
-                 category: Optional[base.NameType] = None,
-                 description: Optional[base.MultiLanguageTextType] = None,
-                 parent: Optional[base.UniqueIdShortNamespace] = None,
-                 administration: Optional[base.AdministrativeInformation] = None,
-                 embedded_data_specifications: Iterable[base.EmbeddedDataSpecification]
-                 = (),
-                 extension: Iterable[base.Extension] = ()):
+    def __init__(
+        self,
+        id_: base.Identifier,
+        is_case_of: Optional[Set[base.Reference]] = None,
+        id_short: Optional[base.NameType] = None,
+        display_name: Optional[base.MultiLanguageNameType] = None,
+        category: Optional[base.NameType] = None,
+        description: Optional[base.MultiLanguageTextType] = None,
+        parent: Optional[base.UniqueIdShortNamespace] = None,
+        administration: Optional[base.AdministrativeInformation] = None,
+        embedded_data_specifications: Iterable[base.EmbeddedDataSpecification] = (),
+        extension: Iterable[base.Extension] = (),
+    ):
 
         super().__init__()
         self.id: base.Identifier = id_
@@ -78,7 +79,9 @@ class ConceptDescription(base.Identifiable, base.HasDataSpecification):
         self.description: Optional[base.MultiLanguageTextType] = description
         self.parent: Optional[base.UniqueIdShortNamespace] = parent
         self.administration: Optional[base.AdministrativeInformation] = administration
-        self.embedded_data_specifications: List[base.EmbeddedDataSpecification] = list(embedded_data_specifications)
+        self.embedded_data_specifications: List[base.EmbeddedDataSpecification] = list(
+            embedded_data_specifications
+        )
         self.extension = base.NamespaceSet(self, [("name", True)], extension)
 
     def _set_category(self, category: Optional[str]):
@@ -89,6 +92,6 @@ class ConceptDescription(base.Identifiable, base.HasDataSpecification):
                 raise base.AASConstraintViolation(
                     51,
                     "ConceptDescription must have one of the following "
-                    "categories: " + str(ALLOWED_CONCEPT_DESCRIPTION_CATEGORIES)
+                    "categories: " + str(ALLOWED_CONCEPT_DESCRIPTION_CATEGORIES),
                 )
             self._category = category

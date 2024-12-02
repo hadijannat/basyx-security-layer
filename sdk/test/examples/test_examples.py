@@ -6,8 +6,12 @@
 # SPDX-License-Identifier: MIT
 import unittest
 
-from basyx.aas.examples.data import example_aas, example_aas_mandatory_attributes, example_aas_missing_attributes, \
-    example_submodel_template
+from basyx.aas.examples.data import (
+    example_aas,
+    example_aas_mandatory_attributes,
+    example_aas_missing_attributes,
+    example_submodel_template,
+)
 from basyx.aas.examples.data._helper import AASDataChecker
 from basyx.aas import model
 
@@ -43,15 +47,16 @@ class ExampleAASTest(unittest.TestCase):
         obj_store = model.DictObjectStore()
         with self.assertRaises(AssertionError) as cm:
             example_aas.check_full_example(checker, obj_store)
-        self.assertIn("AssetAdministrationShell[https://acplt.org/Test_AssetAdministrationShell]",
-                      str(cm.exception))
+        self.assertIn(
+            "AssetAdministrationShell[https://acplt.org/Test_AssetAdministrationShell]",
+            str(cm.exception),
+        )
 
         obj_store = example_aas.create_full_example()
         example_aas.check_full_example(checker, obj_store)
 
         failed_shell = model.AssetAdministrationShell(
-            asset_information=model.AssetInformation(global_asset_id='test'),
-            id_='test'
+            asset_information=model.AssetInformation(global_asset_id="test"), id_="test"
         )
         obj_store.add(failed_shell)
         with self.assertRaises(AssertionError) as cm:
@@ -59,14 +64,14 @@ class ExampleAASTest(unittest.TestCase):
         self.assertIn("AssetAdministrationShell[test]", str(cm.exception))
         obj_store.discard(failed_shell)
 
-        failed_submodel = model.Submodel(id_='test')
+        failed_submodel = model.Submodel(id_="test")
         obj_store.add(failed_submodel)
         with self.assertRaises(AssertionError) as cm:
             example_aas.check_full_example(checker, obj_store)
         self.assertIn("Submodel[test]", str(cm.exception))
         obj_store.discard(failed_submodel)
 
-        failed_cd = model.ConceptDescription(id_='test')
+        failed_cd = model.ConceptDescription(id_="test")
         obj_store.add(failed_cd)
         with self.assertRaises(AssertionError) as cm:
             example_aas.check_full_example(checker, obj_store)
@@ -77,7 +82,8 @@ class ExampleAASTest(unittest.TestCase):
             def __init__(self, id_: model.Identifier):
                 super().__init__()
                 self.id = id_
-        failed_identifiable = DummyIdentifiable(id_='test')
+
+        failed_identifiable = DummyIdentifiable(id_="test")
         obj_store.add(failed_identifiable)
         with self.assertRaises(KeyError) as cm:
             example_aas.check_full_example(checker, obj_store)
@@ -100,7 +106,9 @@ class ExampleAASMandatoryTest(unittest.TestCase):
     def test_example_concept_description(self):
         checker = AASDataChecker(raise_immediately=True)
         concept_description = example_aas_mandatory_attributes.create_example_concept_description()
-        example_aas_mandatory_attributes.check_example_concept_description(checker, concept_description)
+        example_aas_mandatory_attributes.check_example_concept_description(
+            checker, concept_description
+        )
 
     def test_example_asset_administration_shell(self):
         checker = AASDataChecker(raise_immediately=True)
@@ -112,7 +120,7 @@ class ExampleAASMandatoryTest(unittest.TestCase):
         obj_store = example_aas_mandatory_attributes.create_full_example()
         example_aas_mandatory_attributes.check_full_example(checker, obj_store)
 
-        failed_submodel = model.Submodel(id_='test')
+        failed_submodel = model.Submodel(id_="test")
         obj_store.add(failed_submodel)
         with self.assertRaises(AssertionError) as cm:
             example_aas_mandatory_attributes.check_full_example(checker, obj_store)
@@ -131,7 +139,9 @@ class ExampleAASMissingTest(unittest.TestCase):
     def test_example_concept_description(self):
         checker = AASDataChecker(raise_immediately=True)
         concept_description = example_aas_missing_attributes.create_example_concept_description()
-        example_aas_missing_attributes.check_example_concept_description(checker, concept_description)
+        example_aas_missing_attributes.check_example_concept_description(
+            checker, concept_description
+        )
 
     def test_example_asset_administration_shell(self):
         checker = AASDataChecker(raise_immediately=True)
@@ -143,7 +153,7 @@ class ExampleAASMissingTest(unittest.TestCase):
         obj_store = example_aas_missing_attributes.create_full_example()
         example_aas_missing_attributes.check_full_example(checker, obj_store)
 
-        failed_submodel = model.Submodel(id_='test')
+        failed_submodel = model.Submodel(id_="test")
         obj_store.add(failed_submodel)
         with self.assertRaises(AssertionError) as cm:
             example_aas_missing_attributes.check_full_example(checker, obj_store)
@@ -165,7 +175,7 @@ class ExampleSubmodelTemplate(unittest.TestCase):
         obj_store.add(example_submodel_template.create_example_submodel_template())
         example_submodel_template.check_full_example(checker, obj_store)
 
-        failed_submodel = model.Submodel(id_='test')
+        failed_submodel = model.Submodel(id_="test")
         obj_store.add(failed_submodel)
         with self.assertRaises(AssertionError) as cm:
             example_submodel_template.check_full_example(checker, obj_store)

@@ -18,7 +18,9 @@ if base_path is not None:
     wsgi_optparams["base_path"] = base_path
 
 if storage_type == "LOCAL_FILE_BACKEND":
-    application = WSGIApp(LocalFileObjectStore(storage_path), aasx.DictSupplementaryFileContainer(), **wsgi_optparams)
+    application = WSGIApp(
+        LocalFileObjectStore(storage_path), aasx.DictSupplementaryFileContainer(), **wsgi_optparams
+    )
 
 elif storage_type in "LOCAL_FILE_READ_ONLY":
     object_store: model.DictObjectStore = model.DictObjectStore()
@@ -42,5 +44,7 @@ elif storage_type in "LOCAL_FILE_READ_ONLY":
     application = WSGIApp(object_store, file_store, **wsgi_optparams)
 
 else:
-    print(f"STORAGE_TYPE must be either LOCAL_FILE or LOCAL_FILE_READ_ONLY! Current value: {storage_type}",
-          file=sys.stderr)
+    print(
+        f"STORAGE_TYPE must be either LOCAL_FILE or LOCAL_FILE_READ_ONLY! Current value: {storage_type}",
+        file=sys.stderr,
+    )

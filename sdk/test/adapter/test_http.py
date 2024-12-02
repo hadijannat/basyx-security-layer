@@ -63,7 +63,7 @@ HYPOTHESIS_SETTINGS = hypothesis.settings(
     # disable the filter_too_much health check, which triggers if a strategy filters too much data, raising an error
     suppress_health_check=[hypothesis.HealthCheck.filter_too_much],
     # disable data generation deadlines, which would result in an error if data generation takes too much time
-    deadline=None
+    deadline=None,
 )
 
 BASE_URL = "/api/v1"
@@ -82,11 +82,15 @@ for obj in create_full_example():
         IDENTIFIER_SUBMODEL.add(_encode_and_quote(obj.id))
 
 # load aas and submodel api specs
-AAS_SCHEMA = schemathesis.from_path(pathlib.Path(__file__).parent / "http-api-oas-aas.yaml",
-                                    app=WSGIApp(create_full_example(), DictSupplementaryFileContainer()))
+AAS_SCHEMA = schemathesis.from_path(
+    pathlib.Path(__file__).parent / "http-api-oas-aas.yaml",
+    app=WSGIApp(create_full_example(), DictSupplementaryFileContainer()),
+)
 
-SUBMODEL_SCHEMA = schemathesis.from_path(pathlib.Path(__file__).parent / "http-api-oas-submodel.yaml",
-                                         app=WSGIApp(create_full_example(), DictSupplementaryFileContainer()))
+SUBMODEL_SCHEMA = schemathesis.from_path(
+    pathlib.Path(__file__).parent / "http-api-oas-submodel.yaml",
+    app=WSGIApp(create_full_example(), DictSupplementaryFileContainer()),
+)
 
 
 class APIWorkflowAAS(AAS_SCHEMA.as_state_machine()):  # type: ignore

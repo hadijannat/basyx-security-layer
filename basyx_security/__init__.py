@@ -12,7 +12,7 @@ from .core import (
     AccessRight,
     SecurityViolation,
     AuditLog,
-    AuditEvent
+    AuditEvent,
 )
 from .aas_wrapper.secure_aas import SecureAAS
 from .aas_wrapper.secure_submodel import SecureSubmodel
@@ -36,5 +36,5 @@ __all__ = [
     "SecureSubmodel",
     "SecureElement",
     "SubmodelProvider",
-    "DictProvider"
-] 
+    "DictProvider",
+]

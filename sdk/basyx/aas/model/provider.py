@@ -24,6 +24,7 @@ class AbstractObjectProvider(metaclass=abc.ABCMeta):
 
     This includes local object stores, database clients and AAS API clients.
     """
+
     @abc.abstractmethod
     def get_identifiable(self, identifier: Identifier) -> Identifiable:
         """
@@ -39,7 +40,9 @@ class AbstractObjectProvider(metaclass=abc.ABCMeta):
         """
         pass
 
-    def get(self, identifier: Identifier, default: Optional[Identifiable] = None) -> Optional[Identifiable]:
+    def get(
+        self, identifier: Identifier, default: Optional[Identifiable] = None
+    ) -> Optional[Identifiable]:
         """
         Find an object in this set by its :class:`id <basyx.aas.model.base.Identifier>`, with fallback parameter
 
@@ -56,10 +59,12 @@ class AbstractObjectProvider(metaclass=abc.ABCMeta):
             return default
 
 
-_IT = TypeVar('_IT', bound=Identifiable)
+_IT = TypeVar("_IT", bound=Identifiable)
 
 
-class AbstractObjectStore(AbstractObjectProvider, MutableSet[_IT], Generic[_IT], metaclass=abc.ABCMeta):
+class AbstractObjectStore(
+    AbstractObjectProvider, MutableSet[_IT], Generic[_IT], metaclass=abc.ABCMeta
+):
     """
     Abstract baseclass of for container-like objects for storage of :class:`~basyx.aas.model.base.Identifiable` objects.
 
@@ -71,6 +76,7 @@ class AbstractObjectStore(AbstractObjectProvider, MutableSet[_IT], Generic[_IT],
     The AbstractObjectStore inherits from the :class:`~collections.abc.MutableSet` abstract collections class and
     therefore implements all the functions of this class.
     """
+
     @abc.abstractmethod
     def __init__(self):
         pass
@@ -85,6 +91,7 @@ class DictObjectStore(AbstractObjectStore[_IT], Generic[_IT]):
     A local in-memory object store for :class:`~basyx.aas.model.base.Identifiable` objects, backed by a dict, mapping
     :class:`~basyx.aas.model.base.Identifier` → :class:`~basyx.aas.model.base.Identifiable`
     """
+
     def __init__(self, objects: Iterable[_IT] = ()) -> None:
         self._backend: Dict[Identifier, _IT] = {}
         for x in objects:
@@ -95,8 +102,9 @@ class DictObjectStore(AbstractObjectStore[_IT], Generic[_IT]):
 
     def add(self, x: _IT) -> None:
         if x.id in self._backend and self._backend.get(x.id) is not x:
-            raise KeyError("Identifiable object with same id {} is already stored in this store"
-                           .format(x.id))
+            raise KeyError(
+                "Identifiable object with same id {} is already stored in this store".format(x.id)
+            )
         self._backend[x.id] = x
 
     def discard(self, x: _IT) -> None:
@@ -128,6 +136,7 @@ class ObjectProviderMultiplexer(AbstractObjectProvider):
     :param registries: A list of :class:`AbstractObjectProviders <.AbstractObjectProvider>` to query when looking up an
                       object
     """
+
     def __init__(self, registries: Optional[List[AbstractObjectProvider]] = None):
         self.providers: List[AbstractObjectProvider] = registries if registries is not None else []
 
@@ -137,5 +146,8 @@ class ObjectProviderMultiplexer(AbstractObjectProvider):
                 return provider.get_identifiable(identifier)
             except KeyError:
                 pass
-        raise KeyError("Identifier could not be found in any of the {} consulted registries."
-                       .format(len(self.providers)))
+        raise KeyError(
+            "Identifier could not be found in any of the {} consulted registries.".format(
+                len(self.providers)
+            )
+        )

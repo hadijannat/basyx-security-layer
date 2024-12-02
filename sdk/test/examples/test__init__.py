@@ -20,9 +20,9 @@ class TestExampleFunctions(unittest.TestCase):
 
         # Check that the object store contains expected elements
         expected_ids = [
-            'https://acplt.org/Test_AssetAdministrationShell',
-            'https://acplt.org/Test_Submodel_Template',
-            'https://acplt.org/Test_ConceptDescription_Mandatory'
+            "https://acplt.org/Test_AssetAdministrationShell",
+            "https://acplt.org/Test_Submodel_Template",
+            "https://acplt.org/Test_ConceptDescription_Mandatory",
         ]
         for id in expected_ids:
             self.assertIsNotNone(obj_store.get_identifiable(id))
@@ -34,9 +34,9 @@ class TestExampleFunctions(unittest.TestCase):
         self.assertGreater(len(obj_store), 0)
 
         # Check that the object store contains expected elements
-        aas_id = 'https://acplt.org/Test_AssetAdministrationShell'
-        sm_id = 'https://acplt.org/Test_Submodel_Template'
-        cd_id = 'https://acplt.org/Test_ConceptDescription_Mandatory'
+        aas_id = "https://acplt.org/Test_AssetAdministrationShell"
+        sm_id = "https://acplt.org/Test_Submodel_Template"
+        cd_id = "https://acplt.org/Test_ConceptDescription_Mandatory"
 
         aas = obj_store.get_identifiable(aas_id)
         sm = obj_store.get_identifiable(sm_id)

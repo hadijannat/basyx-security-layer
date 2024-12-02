@@ -15,8 +15,13 @@ import io
 import json
 import logging
 import unittest
-from basyx.aas.adapter.json import AASFromJsonDecoder, StrictAASFromJsonDecoder, StrictStrippedAASFromJsonDecoder, \
-    read_aas_json_file, read_aas_json_file_into
+from basyx.aas.adapter.json import (
+    AASFromJsonDecoder,
+    StrictAASFromJsonDecoder,
+    StrictStrippedAASFromJsonDecoder,
+    read_aas_json_file,
+    read_aas_json_file_into,
+)
 from basyx.aas import model
 
 
@@ -184,7 +189,9 @@ class JsonDeserializationTest(unittest.TestCase):
         string_io = io.StringIO(data)
 
         object_store = get_clean_store()
-        identifiers = read_aas_json_file_into(object_store, string_io, replace_existing=True, ignore_existing=False)
+        identifiers = read_aas_json_file_into(
+            object_store, string_io, replace_existing=True, ignore_existing=False
+        )
         self.assertEqual(identifiers.pop(), sm_id)
         submodel = object_store.pop()
         self.assertIsInstance(submodel, model.Submodel)
@@ -194,7 +201,9 @@ class JsonDeserializationTest(unittest.TestCase):
 
         object_store = get_clean_store()
         with self.assertLogs(logging.getLogger(), level=logging.INFO) as log_ctx:
-            identifiers = read_aas_json_file_into(object_store, string_io, replace_existing=False, ignore_existing=True)
+            identifiers = read_aas_json_file_into(
+                object_store, string_io, replace_existing=False, ignore_existing=True
+            )
         self.assertEqual(len(identifiers), 0)
         self.assertIn("already exists in the object store", log_ctx.output[0])  # type: ignore
         submodel = object_store.pop()
@@ -205,8 +214,9 @@ class JsonDeserializationTest(unittest.TestCase):
 
         object_store = get_clean_store()
         with self.assertRaisesRegex(KeyError, r"already exists in the object store"):
-            identifiers = read_aas_json_file_into(object_store, string_io, replace_existing=False,
-                                                  ignore_existing=False)
+            identifiers = read_aas_json_file_into(
+                object_store, string_io, replace_existing=False, ignore_existing=False
+            )
         self.assertEqual(len(identifiers), 0)
         submodel = object_store.pop()
         self.assertIsInstance(submodel, model.Submodel)

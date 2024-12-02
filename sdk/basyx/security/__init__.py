@@ -15,13 +15,9 @@ from .core import (
     SecurityContext,
     SecurityViolation,
     SecurityManager,
-    create_security_context
+    create_security_context,
 )
 
-from .aas_wrapper import (
-    SecureElement,
-    SecureSubmodel,
-    SecureAAS
-)
+from .aas_wrapper import SecureElement, SecureSubmodel, SecureAAS
 
-__version__ = "0.1.0" 
+__version__ = "0.1.0"

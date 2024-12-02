@@ -48,13 +48,17 @@ import basyx.aas.backend.couchdb
 # password of a CouchDB user account which is "member" of this database (see above). Alternatively, you can provide
 # your CouchDB server's admin credentials.
 config = ConfigParser()
-config.read([Path(__file__).parent.parent.parent.parent / 'test' / 'test_config.default.ini',
-             Path(__file__).parent.parent.parent.parent / 'test' / 'test_config.ini'])
+config.read(
+    [
+        Path(__file__).parent.parent.parent.parent / "test" / "test_config.default.ini",
+        Path(__file__).parent.parent.parent.parent / "test" / "test_config.ini",
+    ]
+)
 
-couchdb_url = config['couchdb']['url']
-couchdb_database = config['couchdb']['database']
-couchdb_user = config['couchdb']['user']
-couchdb_password = config['couchdb']['password']
+couchdb_url = config["couchdb"]["url"]
+couchdb_database = config["couchdb"]["database"]
+couchdb_user = config["couchdb"]["user"]
+couchdb_password = config["couchdb"]["password"]
 
 
 # Provide the login credentials to the CouchDB backend.
@@ -71,7 +75,9 @@ object_store = basyx.aas.backend.couchdb.CouchDBObjectStore(couchdb_url, couchdb
 #####################################################
 
 # Create some example objects
-example_submodel1 = basyx.aas.examples.data.example_aas.create_example_asset_identification_submodel()
+example_submodel1 = (
+    basyx.aas.examples.data.example_aas.create_example_asset_identification_submodel()
+)
 example_submodel2 = basyx.aas.examples.data.example_aas.create_example_bill_of_material_submodel()
 
 # The CouchDBObjectStore behaves just like other ObjectStore implementations (see `tutorial_storage.py`). The objects
@@ -95,7 +101,7 @@ object_store.add(example_submodel2)
 example_submodel1.update()
 
 # Make some changes to a Property within the submodel
-prop = example_submodel1.get_referable('ManufacturerName')
+prop = example_submodel1.get_referable("ManufacturerName")
 assert isinstance(prop, basyx.aas.model.Property)
 
 prop.value = "RWTH Aachen"

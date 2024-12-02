@@ -40,10 +40,9 @@ class Backend(metaclass=abc.ABCMeta):
 
     @classmethod
     @abc.abstractmethod
-    def commit_object(cls,
-                      committed_object: "Referable",
-                      store_object: "Referable",
-                      relative_path: List[str]) -> None:
+    def commit_object(
+        cls, committed_object: "Referable", store_object: "Referable", relative_path: List[str]
+    ) -> None:
         """
         Function (class method) to be called when an object shall be committed (local changes pushed to the external
         data source) via this backend implementation.
@@ -78,10 +77,9 @@ class Backend(metaclass=abc.ABCMeta):
 
     @classmethod
     @abc.abstractmethod
-    def update_object(cls,
-                      updated_object: "Referable",
-                      store_object: "Referable",
-                      relative_path: List[str]) -> None:
+    def update_object(
+        cls, updated_object: "Referable", store_object: "Referable", relative_path: List[str]
+    ) -> None:
         """
         Function (class method) to be called when an object shall be updated (local object updated with changes from the
         external data source) via this backend implementation.
@@ -162,14 +160,17 @@ def get_backend(url: str) -> Type[Backend]:
 # Custom Exception classes for reporting errors during interaction with Backends
 class BackendError(Exception):
     """Base class of all exceptions raised by the backends module"""
+
     pass
 
 
 class UnknownBackendException(BackendError):
     """Raised, if the backend is not found in the registry"""
+
     pass
 
 
 class BackendNotAvailableException(BackendError):
     """Raised, if the backend does exist in the registry, but is not available for some reason"""
+
     pass

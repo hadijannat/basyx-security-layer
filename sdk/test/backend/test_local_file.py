@@ -33,7 +33,7 @@ class LocalFileBackendTest(unittest.TestCase):
         self.object_store.add(test_object)
         self.assertEqual(
             test_object.source,
-            source_core+"fd787262b2743360f7ad03a3b4e9187e4c088aa37303448c9c43fe4c973dac53.json"
+            source_core + "fd787262b2743360f7ad03a3b4e9187e4c088aa37303448c9c43fe4c973dac53.json",
         )
 
     def test_retrieval(self):
@@ -41,17 +41,25 @@ class LocalFileBackendTest(unittest.TestCase):
         self.object_store.add(test_object)
 
         # When retrieving the object, we should get the *same* instance as we added
-        test_object_retrieved = self.object_store.get_identifiable('https://acplt.org/Test_Submodel')
+        test_object_retrieved = self.object_store.get_identifiable(
+            "https://acplt.org/Test_Submodel"
+        )
         self.assertIs(test_object, test_object_retrieved)
 
         # When retrieving it again, we should still get the same object
         del test_object
-        test_object_retrieved_again = self.object_store.get_identifiable('https://acplt.org/Test_Submodel')
+        test_object_retrieved_again = self.object_store.get_identifiable(
+            "https://acplt.org/Test_Submodel"
+        )
         self.assertIs(test_object_retrieved, test_object_retrieved_again)
 
         # However, a changed source should invalidate the cached object, so we should get a new copy
-        test_object_retrieved.source = "couchdb://example.com/example/IRI-https%3A%2F%2Facplt.org%2FTest_Submodel"
-        test_object_retrieved_third = self.object_store.get_identifiable('https://acplt.org/Test_Submodel')
+        test_object_retrieved.source = (
+            "couchdb://example.com/example/IRI-https%3A%2F%2Facplt.org%2FTest_Submodel"
+        )
+        test_object_retrieved_third = self.object_store.get_identifiable(
+            "https://acplt.org/Test_Submodel"
+        )
         self.assertIsNot(test_object_retrieved, test_object_retrieved_third)
 
     def test_example_submodel_storing(self) -> None:
@@ -63,8 +71,8 @@ class LocalFileBackendTest(unittest.TestCase):
         self.assertIn(example_submodel, self.object_store)
 
         # Restore example submodel and check data
-        submodel_restored = self.object_store.get_identifiable('https://acplt.org/Test_Submodel')
-        assert (isinstance(submodel_restored, model.Submodel))
+        submodel_restored = self.object_store.get_identifiable("https://acplt.org/Test_Submodel")
+        assert isinstance(submodel_restored, model.Submodel)
         checker = AASDataChecker(raise_immediately=True)
         check_example_submodel(checker, submodel_restored)
 
@@ -82,7 +90,9 @@ class LocalFileBackendTest(unittest.TestCase):
         self.assertEqual(5, len(self.object_store))
 
         # Iterate objects, add them to a DictObjectStore and check them
-        retrieved_data_store: model.provider.DictObjectStore[model.Identifiable] = model.provider.DictObjectStore()
+        retrieved_data_store: model.provider.DictObjectStore[model.Identifiable] = (
+            model.provider.DictObjectStore()
+        )
         for item in self.object_store:
             retrieved_data_store.add(item)
         checker = AASDataChecker(raise_immediately=True)
@@ -94,23 +104,31 @@ class LocalFileBackendTest(unittest.TestCase):
         self.object_store.add(example_submodel)
         with self.assertRaises(KeyError) as cm:
             self.object_store.add(example_submodel)
-        self.assertEqual("'Identifiable with id https://acplt.org/Test_Submodel already exists in "
-                         "local file database'", str(cm.exception))
+        self.assertEqual(
+            "'Identifiable with id https://acplt.org/Test_Submodel already exists in "
+            "local file database'",
+            str(cm.exception),
+        )
 
         # Querying a deleted object should raise a KeyError
-        retrieved_submodel = self.object_store.get_identifiable('https://acplt.org/Test_Submodel')
+        retrieved_submodel = self.object_store.get_identifiable("https://acplt.org/Test_Submodel")
         self.object_store.discard(example_submodel)
         with self.assertRaises(KeyError) as cm:
-            self.object_store.get_identifiable('https://acplt.org/Test_Submodel')
-        self.assertEqual("'No Identifiable with id https://acplt.org/Test_Submodel "
-                         "found in local file database'",
-                         str(cm.exception))
+            self.object_store.get_identifiable("https://acplt.org/Test_Submodel")
+        self.assertEqual(
+            "'No Identifiable with id https://acplt.org/Test_Submodel "
+            "found in local file database'",
+            str(cm.exception),
+        )
 
         # Double deleting should also raise a KeyError
         with self.assertRaises(KeyError) as cm:
             self.object_store.discard(retrieved_submodel)
-        self.assertEqual("'No AAS object with id https://acplt.org/Test_Submodel exists in "
-                         "local file database'", str(cm.exception))
+        self.assertEqual(
+            "'No AAS object with id https://acplt.org/Test_Submodel exists in "
+            "local file database'",
+            str(cm.exception),
+        )
 
     def test_editing(self):
         test_object = create_example_submodel()

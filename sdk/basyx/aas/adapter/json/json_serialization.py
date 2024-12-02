@@ -55,6 +55,7 @@ class AASToJsonEncoder(json.JSONEncoder):
                     Defaults to ``False``.
                     See https://git.rwth-aachen.de/acplt/pyi40aas/-/issues/91
     """
+
     stripped = False
 
     def default(self, obj: object) -> object:
@@ -111,45 +112,52 @@ class AASToJsonEncoder(json.JSONEncoder):
         data: Dict[str, object] = {}
         if isinstance(obj, model.HasExtension) and not cls.stripped:
             if obj.extension:
-                data['extensions'] = list(obj.extension)
+                data["extensions"] = list(obj.extension)
         if isinstance(obj, model.HasDataSpecification) and not cls.stripped:
             if obj.embedded_data_specifications:
-                data['embeddedDataSpecifications'] = [
-                    {'dataSpecification': spec.data_specification,
-                     'dataSpecificationContent': spec.data_specification_content}
+                data["embeddedDataSpecifications"] = [
+                    {
+                        "dataSpecification": spec.data_specification,
+                        "dataSpecificationContent": spec.data_specification_content,
+                    }
                     for spec in obj.embedded_data_specifications
                 ]
 
         if isinstance(obj, model.Referable):
             if obj.id_short and not isinstance(obj.parent, model.SubmodelElementList):
-                data['idShort'] = obj.id_short
+                data["idShort"] = obj.id_short
             if obj.display_name:
-                data['displayName'] = obj.display_name
+                data["displayName"] = obj.display_name
             if obj.category:
-                data['category'] = obj.category
+                data["category"] = obj.category
             if obj.description:
-                data['description'] = obj.description
+                data["description"] = obj.description
             try:
-                ref_type = next(iter(t for t in inspect.getmro(type(obj)) if t in model.KEY_TYPES_CLASSES))
+                ref_type = next(
+                    iter(t for t in inspect.getmro(type(obj)) if t in model.KEY_TYPES_CLASSES)
+                )
             except StopIteration as e:
-                raise TypeError("Object of type {} is Referable but does not inherit from a known AAS type"
-                                .format(obj.__class__.__name__)) from e
-            data['modelType'] = ref_type.__name__
+                raise TypeError(
+                    "Object of type {} is Referable but does not inherit from a known AAS type".format(
+                        obj.__class__.__name__
+                    )
+                ) from e
+            data["modelType"] = ref_type.__name__
         if isinstance(obj, model.Identifiable):
-            data['id'] = obj.id
+            data["id"] = obj.id
             if obj.administration:
-                data['administration'] = obj.administration
+                data["administration"] = obj.administration
         if isinstance(obj, model.HasSemantics):
             if obj.semantic_id:
-                data['semanticId'] = obj.semantic_id
+                data["semanticId"] = obj.semantic_id
             if obj.supplemental_semantic_id:
-                data['supplementalSemanticIds'] = list(obj.supplemental_semantic_id)
+                data["supplementalSemanticIds"] = list(obj.supplemental_semantic_id)
         if isinstance(obj, model.HasKind):
             if obj.kind is model.ModellingKind.TEMPLATE:
-                data['kind'] = _generic.MODELLING_KIND[obj.kind]
+                data["kind"] = _generic.MODELLING_KIND[obj.kind]
         if isinstance(obj, model.Qualifiable) and not cls.stripped:
             if obj.qualifier:
-                data['qualifiers'] = list(obj.qualifier)
+                data["qualifiers"] = list(obj.qualifier)
         return data
 
     # #############################################################
@@ -158,8 +166,7 @@ class AASToJsonEncoder(json.JSONEncoder):
 
     @classmethod
     def _lang_string_set_to_json(cls, obj: model.LangStringSet) -> List[Dict[str, object]]:
-        return [{'language': k, 'text': v}
-                for k, v in obj.items()]
+        return [{"language": k, "text": v} for k, v in obj.items()]
 
     @classmethod
     def _key_to_json(cls, obj: model.Key) -> Dict[str, object]:
@@ -170,12 +177,13 @@ class AASToJsonEncoder(json.JSONEncoder):
         :return: dict with the serialized attributes of this object
         """
         data = cls._abstract_classes_to_json(obj)
-        data.update({'type': _generic.KEY_TYPES[obj.type],
-                     'value': obj.value})
+        data.update({"type": _generic.KEY_TYPES[obj.type], "value": obj.value})
         return data
 
     @classmethod
-    def _administrative_information_to_json(cls, obj: model.AdministrativeInformation) -> Dict[str, object]:
+    def _administrative_information_to_json(
+        cls, obj: model.AdministrativeInformation
+    ) -> Dict[str, object]:
         """
         serialization of an object from class AdministrativeInformation to json
 
@@ -184,13 +192,13 @@ class AASToJsonEncoder(json.JSONEncoder):
         """
         data = cls._abstract_classes_to_json(obj)
         if obj.version:
-            data['version'] = obj.version
+            data["version"] = obj.version
             if obj.revision:
-                data['revision'] = obj.revision
+                data["revision"] = obj.revision
         if obj.creator:
-            data['creator'] = obj.creator
+            data["creator"] = obj.creator
         if obj.template_id:
-            data['templateId'] = obj.template_id
+            data["templateId"] = obj.template_id
         return data
 
     @classmethod
@@ -202,10 +210,10 @@ class AASToJsonEncoder(json.JSONEncoder):
         :return: dict with the serialized attributes of this object
         """
         data = cls._abstract_classes_to_json(obj)
-        data['type'] = _generic.REFERENCE_TYPES[obj.__class__]
-        data['keys'] = list(obj.key)
+        data["type"] = _generic.REFERENCE_TYPES[obj.__class__]
+        data["keys"] = list(obj.key)
         if obj.referred_semantic_id is not None:
-            data['referredSemanticId'] = cls._reference_to_json(obj.referred_semantic_id)
+            data["referredSemanticId"] = cls._reference_to_json(obj.referred_semantic_id)
         return data
 
     @classmethod
@@ -229,14 +237,14 @@ class AASToJsonEncoder(json.JSONEncoder):
         """
         data = cls._abstract_classes_to_json(obj)
         if obj.value:
-            data['value'] = model.datatypes.xsd_repr(obj.value) if obj.value is not None else None
+            data["value"] = model.datatypes.xsd_repr(obj.value) if obj.value is not None else None
         if obj.value_id:
-            data['valueId'] = obj.value_id
+            data["valueId"] = obj.value_id
         # Even though kind is optional in the schema, it's better to always serialize it instead of specifying
         # the default value in multiple locations.
-        data['kind'] = _generic.QUALIFIER_KIND[obj.kind]
-        data['valueType'] = model.datatypes.XSD_TYPE_NAMES[obj.value_type]
-        data['type'] = obj.type
+        data["kind"] = _generic.QUALIFIER_KIND[obj.kind]
+        data["valueType"] = model.datatypes.XSD_TYPE_NAMES[obj.value_type]
+        data["type"] = obj.type
         return data
 
     @classmethod
@@ -249,12 +257,12 @@ class AASToJsonEncoder(json.JSONEncoder):
         """
         data = cls._abstract_classes_to_json(obj)
         if obj.value:
-            data['value'] = model.datatypes.xsd_repr(obj.value) if obj.value is not None else None
+            data["value"] = model.datatypes.xsd_repr(obj.value) if obj.value is not None else None
         if obj.refers_to:
-            data['refersTo'] = list(obj.refers_to)
+            data["refersTo"] = list(obj.refers_to)
         if obj.value_type:
-            data['valueType'] = model.datatypes.XSD_TYPE_NAMES[obj.value_type]
-        data['name'] = obj.name
+            data["valueType"] = model.datatypes.XSD_TYPE_NAMES[obj.value_type]
+        data["name"] = obj.name
         return data
 
     @classmethod
@@ -266,8 +274,7 @@ class AASToJsonEncoder(json.JSONEncoder):
         :return: dict with the serialized attributes of this object
         """
         data = cls._abstract_classes_to_json(obj)
-        data.update({'value': model.datatypes.xsd_repr(obj.value),
-                     'valueId': obj.value_id})
+        data.update({"value": model.datatypes.xsd_repr(obj.value), "valueId": obj.value_id})
         return data
 
     @classmethod
@@ -278,7 +285,7 @@ class AASToJsonEncoder(json.JSONEncoder):
         :param obj: object of class ValueList
         :return: dict with the serialized attributes of this object
         """
-        return {'valueReferencePairs': list(obj)}
+        return {"valueReferencePairs": list(obj)}
 
     # ############################################################
     # transformation functions to serialize classes from model.aas
@@ -293,10 +300,10 @@ class AASToJsonEncoder(json.JSONEncoder):
         :return: dict with the serialized attributes of this object
         """
         data = cls._abstract_classes_to_json(obj)
-        data['name'] = obj.name
-        data['value'] = obj.value
+        data["name"] = obj.name
+        data["value"] = obj.value
         if obj.external_subject_id:
-            data['externalSubjectId'] = obj.external_subject_id
+            data["externalSubjectId"] = obj.external_subject_id
         return data
 
     @classmethod
@@ -308,15 +315,15 @@ class AASToJsonEncoder(json.JSONEncoder):
         :return: dict with the serialized attributes of this object
         """
         data = cls._abstract_classes_to_json(obj)
-        data['assetKind'] = _generic.ASSET_KIND[obj.asset_kind]
+        data["assetKind"] = _generic.ASSET_KIND[obj.asset_kind]
         if obj.global_asset_id:
-            data['globalAssetId'] = obj.global_asset_id
+            data["globalAssetId"] = obj.global_asset_id
         if obj.specific_asset_id:
-            data['specificAssetIds'] = list(obj.specific_asset_id)
+            data["specificAssetIds"] = list(obj.specific_asset_id)
         if obj.asset_type:
-            data['assetType'] = obj.asset_type
+            data["assetType"] = obj.asset_type
         if obj.default_thumbnail:
-            data['defaultThumbnail'] = obj.default_thumbnail
+            data["defaultThumbnail"] = obj.default_thumbnail
         return data
 
     @classmethod
@@ -329,12 +336,13 @@ class AASToJsonEncoder(json.JSONEncoder):
         """
         data = cls._abstract_classes_to_json(obj)
         if obj.is_case_of:
-            data['isCaseOf'] = list(obj.is_case_of)
+            data["isCaseOf"] = list(obj.is_case_of)
         return data
 
     @classmethod
     def _data_specification_iec61360_to_json(
-            cls, obj: model.base.DataSpecificationIEC61360) -> Dict[str, object]:
+        cls, obj: model.base.DataSpecificationIEC61360
+    ) -> Dict[str, object]:
         """
         serialization of an object from class DataSpecificationIEC61360 to json
 
@@ -342,35 +350,39 @@ class AASToJsonEncoder(json.JSONEncoder):
         :return: dict with the serialized attributes of this object
         """
         data_spec: Dict[str, object] = {
-            'modelType': 'DataSpecificationIec61360',
-            'preferredName': obj.preferred_name
+            "modelType": "DataSpecificationIec61360",
+            "preferredName": obj.preferred_name,
         }
         if obj.data_type is not None:
-            data_spec['dataType'] = _generic.IEC61360_DATA_TYPES[obj.data_type]
+            data_spec["dataType"] = _generic.IEC61360_DATA_TYPES[obj.data_type]
         if obj.definition is not None:
-            data_spec['definition'] = obj.definition
+            data_spec["definition"] = obj.definition
         if obj.short_name is not None:
-            data_spec['shortName'] = obj.short_name
+            data_spec["shortName"] = obj.short_name
         if obj.unit is not None:
-            data_spec['unit'] = obj.unit
+            data_spec["unit"] = obj.unit
         if obj.unit_id is not None:
-            data_spec['unitId'] = obj.unit_id
+            data_spec["unitId"] = obj.unit_id
         if obj.source_of_definition is not None:
-            data_spec['sourceOfDefinition'] = obj.source_of_definition
+            data_spec["sourceOfDefinition"] = obj.source_of_definition
         if obj.symbol is not None:
-            data_spec['symbol'] = obj.symbol
+            data_spec["symbol"] = obj.symbol
         if obj.value_format is not None:
-            data_spec['valueFormat'] = obj.value_format
+            data_spec["valueFormat"] = obj.value_format
         if obj.value_list is not None:
-            data_spec['valueList'] = cls._value_list_to_json(obj.value_list)
+            data_spec["valueList"] = cls._value_list_to_json(obj.value_list)
         if obj.value is not None:
-            data_spec['value'] = obj.value
+            data_spec["value"] = obj.value
         if obj.level_types:
-            data_spec['levelType'] = {v: k in obj.level_types for k, v in _generic.IEC61360_LEVEL_TYPES.items()}
+            data_spec["levelType"] = {
+                v: k in obj.level_types for k, v in _generic.IEC61360_LEVEL_TYPES.items()
+            }
         return data_spec
 
     @classmethod
-    def _asset_administration_shell_to_json(cls, obj: model.AssetAdministrationShell) -> Dict[str, object]:
+    def _asset_administration_shell_to_json(
+        cls, obj: model.AssetAdministrationShell
+    ) -> Dict[str, object]:
         """
         serialization of an object from class AssetAdministrationShell to json
 
@@ -401,11 +413,13 @@ class AASToJsonEncoder(json.JSONEncoder):
         """
         data = cls._abstract_classes_to_json(obj)
         if not cls.stripped and obj.submodel_element != set():
-            data['submodelElements'] = list(obj.submodel_element)
+            data["submodelElements"] = list(obj.submodel_element)
         return data
 
     @classmethod
-    def _data_element_to_json(cls, obj: model.DataElement) -> Dict[str, object]:  # no attributes in specification yet
+    def _data_element_to_json(
+        cls, obj: model.DataElement
+    ) -> Dict[str, object]:  # no attributes in specification yet
         """
         serialization of an object from class DataElement to json
 
@@ -424,14 +438,16 @@ class AASToJsonEncoder(json.JSONEncoder):
         """
         data = cls._abstract_classes_to_json(obj)
         if obj.value is not None:
-            data['value'] = model.datatypes.xsd_repr(obj.value)
+            data["value"] = model.datatypes.xsd_repr(obj.value)
         if obj.value_id:
-            data['valueId'] = obj.value_id
-        data['valueType'] = model.datatypes.XSD_TYPE_NAMES[obj.value_type]
+            data["valueId"] = obj.value_id
+        data["valueType"] = model.datatypes.XSD_TYPE_NAMES[obj.value_type]
         return data
 
     @classmethod
-    def _multi_language_property_to_json(cls, obj: model.MultiLanguageProperty) -> Dict[str, object]:
+    def _multi_language_property_to_json(
+        cls, obj: model.MultiLanguageProperty
+    ) -> Dict[str, object]:
         """
         serialization of an object from class MultiLanguageProperty to json
 
@@ -440,9 +456,9 @@ class AASToJsonEncoder(json.JSONEncoder):
         """
         data = cls._abstract_classes_to_json(obj)
         if obj.value:
-            data['value'] = obj.value
+            data["value"] = obj.value
         if obj.value_id:
-            data['valueId'] = obj.value_id
+            data["valueId"] = obj.value_id
         return data
 
     @classmethod
@@ -454,11 +470,11 @@ class AASToJsonEncoder(json.JSONEncoder):
         :return: dict with the serialized attributes of this object
         """
         data = cls._abstract_classes_to_json(obj)
-        data['valueType'] = model.datatypes.XSD_TYPE_NAMES[obj.value_type]
+        data["valueType"] = model.datatypes.XSD_TYPE_NAMES[obj.value_type]
         if obj.min is not None:
-            data['min'] = model.datatypes.xsd_repr(obj.min)
+            data["min"] = model.datatypes.xsd_repr(obj.min)
         if obj.max is not None:
-            data['max'] = model.datatypes.xsd_repr(obj.max)
+            data["max"] = model.datatypes.xsd_repr(obj.max)
         return data
 
     @classmethod
@@ -470,9 +486,9 @@ class AASToJsonEncoder(json.JSONEncoder):
         :return: dict with the serialized attributes of this object
         """
         data = cls._abstract_classes_to_json(obj)
-        data['contentType'] = obj.content_type
+        data["contentType"] = obj.content_type
         if obj.value is not None:
-            data['value'] = base64.b64encode(obj.value).decode()
+            data["value"] = base64.b64encode(obj.value).decode()
         return data
 
     @classmethod
@@ -484,9 +500,9 @@ class AASToJsonEncoder(json.JSONEncoder):
         :return: dict with the serialized attributes of this object
         """
         data = cls._abstract_classes_to_json(obj)
-        data['contentType'] = obj.content_type
+        data["contentType"] = obj.content_type
         if obj.value is not None:
-            data['value'] = obj.value
+            data["value"] = obj.value
         return data
 
     @classmethod
@@ -498,9 +514,9 @@ class AASToJsonEncoder(json.JSONEncoder):
         :return: dict with the serialized attributes of this object
         """
         data = cls._abstract_classes_to_json(obj)
-        data['path'] = obj.path
+        data["path"] = obj.path
         if obj.content_type is not None:
-            data['contentType'] = obj.content_type
+            data["contentType"] = obj.content_type
         return data
 
     @classmethod
@@ -513,11 +529,13 @@ class AASToJsonEncoder(json.JSONEncoder):
         """
         data = cls._abstract_classes_to_json(obj)
         if obj.value:
-            data['value'] = obj.value
+            data["value"] = obj.value
         return data
 
     @classmethod
-    def _submodel_element_collection_to_json(cls, obj: model.SubmodelElementCollection) -> Dict[str, object]:
+    def _submodel_element_collection_to_json(
+        cls, obj: model.SubmodelElementCollection
+    ) -> Dict[str, object]:
         """
         serialization of an object from class SubmodelElementCollection to json
 
@@ -526,7 +544,7 @@ class AASToJsonEncoder(json.JSONEncoder):
         """
         data = cls._abstract_classes_to_json(obj)
         if not cls.stripped and len(obj.value) > 0:
-            data['value'] = list(obj.value)
+            data["value"] = list(obj.value)
         return data
 
     @classmethod
@@ -540,14 +558,18 @@ class AASToJsonEncoder(json.JSONEncoder):
         data = cls._abstract_classes_to_json(obj)
         # Even though orderRelevant is optional in the schema, it's better to always serialize it instead of specifying
         # the default value in multiple locations.
-        data['orderRelevant'] = obj.order_relevant
-        data['typeValueListElement'] = _generic.KEY_TYPES[model.KEY_TYPES_CLASSES[obj.type_value_list_element]]
+        data["orderRelevant"] = obj.order_relevant
+        data["typeValueListElement"] = _generic.KEY_TYPES[
+            model.KEY_TYPES_CLASSES[obj.type_value_list_element]
+        ]
         if obj.semantic_id_list_element is not None:
-            data['semanticIdListElement'] = obj.semantic_id_list_element
+            data["semanticIdListElement"] = obj.semantic_id_list_element
         if obj.value_type_list_element is not None:
-            data['valueTypeListElement'] = model.datatypes.XSD_TYPE_NAMES[obj.value_type_list_element]
+            data["valueTypeListElement"] = model.datatypes.XSD_TYPE_NAMES[
+                obj.value_type_list_element
+            ]
         if not cls.stripped and len(obj.value) > 0:
-            data['value'] = list(obj.value)
+            data["value"] = list(obj.value)
         return data
 
     @classmethod
@@ -559,11 +581,13 @@ class AASToJsonEncoder(json.JSONEncoder):
         :return: dict with the serialized attributes of this object
         """
         data = cls._abstract_classes_to_json(obj)
-        data.update({'first': obj.first, 'second': obj.second})
+        data.update({"first": obj.first, "second": obj.second})
         return data
 
     @classmethod
-    def _annotated_relationship_element_to_json(cls, obj: model.AnnotatedRelationshipElement) -> Dict[str, object]:
+    def _annotated_relationship_element_to_json(
+        cls, obj: model.AnnotatedRelationshipElement
+    ) -> Dict[str, object]:
         """
         serialization of an object from class AnnotatedRelationshipElement to json
 
@@ -571,9 +595,9 @@ class AASToJsonEncoder(json.JSONEncoder):
         :return: dict with the serialized attributes of this object
         """
         data = cls._abstract_classes_to_json(obj)
-        data.update({'first': obj.first, 'second': obj.second})
+        data.update({"first": obj.first, "second": obj.second})
         if not cls.stripped and obj.annotation:
-            data['annotations'] = list(obj.annotation)
+            data["annotations"] = list(obj.annotation)
         return data
 
     @classmethod
@@ -588,7 +612,7 @@ class AASToJsonEncoder(json.JSONEncoder):
         :return: ``OperationVariable`` wrapper containing the serialized
                  :class:`~basyx.aas.model.submodel.SubmodelElement`
         """
-        return {'value': obj}
+        return {"value": obj}
 
     @classmethod
     def _operation_to_json(cls, obj: model.Operation) -> Dict[str, object]:
@@ -599,9 +623,11 @@ class AASToJsonEncoder(json.JSONEncoder):
         :return: dict with the serialized attributes of this object
         """
         data = cls._abstract_classes_to_json(obj)
-        for tag, nss in (('inputVariables', obj.input_variable),
-                         ('outputVariables', obj.output_variable),
-                         ('inoutputVariables', obj.in_output_variable)):
+        for tag, nss in (
+            ("inputVariables", obj.input_variable),
+            ("outputVariables", obj.output_variable),
+            ("inoutputVariables", obj.in_output_variable),
+        ):
             if nss:
                 data[tag] = [cls._operation_variable_to_json(obj) for obj in nss]
         return data
@@ -628,16 +654,18 @@ class AASToJsonEncoder(json.JSONEncoder):
         """
         data = cls._abstract_classes_to_json(obj)
         if not cls.stripped and obj.statement:
-            data['statements'] = list(obj.statement)
-        data['entityType'] = _generic.ENTITY_TYPES[obj.entity_type]
+            data["statements"] = list(obj.statement)
+        data["entityType"] = _generic.ENTITY_TYPES[obj.entity_type]
         if obj.global_asset_id:
-            data['globalAssetId'] = obj.global_asset_id
+            data["globalAssetId"] = obj.global_asset_id
         if obj.specific_asset_id:
-            data['specificAssetIds'] = list(obj.specific_asset_id)
+            data["specificAssetIds"] = list(obj.specific_asset_id)
         return data
 
     @classmethod
-    def _event_element_to_json(cls, obj: model.EventElement) -> Dict[str, object]:  # no attributes in specification yet
+    def _event_element_to_json(
+        cls, obj: model.EventElement
+    ) -> Dict[str, object]:  # no attributes in specification yet
         """
         serialization of an object from class EventElement to json
 
@@ -655,19 +683,19 @@ class AASToJsonEncoder(json.JSONEncoder):
         :return: dict with the serialized attributes of this object
         """
         data = cls._abstract_classes_to_json(obj)
-        data['observed'] = obj.observed
-        data['direction'] = _generic.DIRECTION[obj.direction]
-        data['state'] = _generic.STATE_OF_EVENT[obj.state]
+        data["observed"] = obj.observed
+        data["direction"] = _generic.DIRECTION[obj.direction]
+        data["state"] = _generic.STATE_OF_EVENT[obj.state]
         if obj.message_topic is not None:
-            data['messageTopic'] = obj.message_topic
+            data["messageTopic"] = obj.message_topic
         if obj.message_broker is not None:
-            data['messageBroker'] = cls._reference_to_json(obj.message_broker)
+            data["messageBroker"] = cls._reference_to_json(obj.message_broker)
         if obj.last_update is not None:
-            data['lastUpdate'] = model.datatypes.xsd_repr(obj.last_update)
+            data["lastUpdate"] = model.datatypes.xsd_repr(obj.last_update)
         if obj.min_interval is not None:
-            data['minInterval'] = model.datatypes.xsd_repr(obj.min_interval)
+            data["minInterval"] = model.datatypes.xsd_repr(obj.min_interval)
         if obj.max_interval is not None:
-            data['maxInterval'] = model.datatypes.xsd_repr(obj.max_interval)
+            data["maxInterval"] = model.datatypes.xsd_repr(obj.max_interval)
         return data
 
 
@@ -676,10 +704,13 @@ class StrippedAASToJsonEncoder(AASToJsonEncoder):
     AASToJsonEncoder for stripped objects. Used in the HTTP API.
     See https://git.rwth-aachen.de/acplt/pyi40aas/-/issues/91
     """
+
     stripped = True
 
 
-def _select_encoder(stripped: bool, encoder: Optional[Type[AASToJsonEncoder]] = None) -> Type[AASToJsonEncoder]:
+def _select_encoder(
+    stripped: bool, encoder: Optional[Type[AASToJsonEncoder]] = None
+) -> Type[AASToJsonEncoder]:
     """
     Returns the correct encoder based on the stripped parameter. If an encoder class is given, stripped is ignored.
 
@@ -707,16 +738,20 @@ def _create_dict(data: model.AbstractObjectStore) -> dict:
             concept_descriptions.append(obj)
     dict_: Dict[str, List] = {}
     if asset_administration_shells:
-        dict_['assetAdministrationShells'] = asset_administration_shells
+        dict_["assetAdministrationShells"] = asset_administration_shells
     if submodels:
-        dict_['submodels'] = submodels
+        dict_["submodels"] = submodels
     if concept_descriptions:
-        dict_['conceptDescriptions'] = concept_descriptions
+        dict_["conceptDescriptions"] = concept_descriptions
     return dict_
 
 
-def object_store_to_json(data: model.AbstractObjectStore, stripped: bool = False,
-                         encoder: Optional[Type[AASToJsonEncoder]] = None, **kwargs) -> str:
+def object_store_to_json(
+    data: model.AbstractObjectStore,
+    stripped: bool = False,
+    encoder: Optional[Type[AASToJsonEncoder]] = None,
+    **kwargs,
+) -> str:
     """
     Create a json serialization of a set of AAS objects according to 'Details of the Asset Administration Shell',
     chapter 5.5
@@ -738,12 +773,18 @@ class _DetachingTextIOWrapper(io.TextIOWrapper):
     """
     Like :class:`io.TextIOWrapper`, but detaches on context exit instead of closing the wrapped buffer.
     """
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.detach()
 
 
-def write_aas_json_file(file: _generic.PathOrIO, data: model.AbstractObjectStore, stripped: bool = False,
-                        encoder: Optional[Type[AASToJsonEncoder]] = None, **kwargs) -> None:
+def write_aas_json_file(
+    file: _generic.PathOrIO,
+    data: model.AbstractObjectStore,
+    stripped: bool = False,
+    encoder: Optional[Type[AASToJsonEncoder]] = None,
+    **kwargs,
+) -> None:
     """
     Write a set of AAS objects to an Asset Administration Shell JSON file according to 'Details of the Asset
     Administration Shell', chapter 5.5

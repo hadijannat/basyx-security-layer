@@ -13,8 +13,9 @@ from typing import Union, Iterator
 from .. import model
 
 
-def walk_submodel(collection: Union[model.Submodel, model.SubmodelElementCollection, model.SubmodelElementList]) \
-        -> Iterator[model.SubmodelElement]:
+def walk_submodel(
+    collection: Union[model.Submodel, model.SubmodelElementCollection, model.SubmodelElementList]
+) -> Iterator[model.SubmodelElement]:
     """
     Traverse the :class:`SubmodelElements <basyx.aas.model.submodel.SubmodelElement>` in a
     :class:`~basyx.aas.model.submodel.Submodel`, :class:`~basyx.aas.model.submodel.SubmodelElementCollection` or a
@@ -24,7 +25,9 @@ def walk_submodel(collection: Union[model.Submodel, model.SubmodelElementCollect
     No :class:`SubmodelElements <basyx.aas.model.submodel.SubmodelElement>` should be added, removed or
     moved while iterating, as this could result in undefined behaviour.
     """
-    elements = collection.submodel_element if isinstance(collection, model.Submodel) else collection.value
+    elements = (
+        collection.submodel_element if isinstance(collection, model.Submodel) else collection.value
+    )
     for element in elements:
         if isinstance(element, (model.SubmodelElementCollection, model.SubmodelElementList)):
             yield from walk_submodel(element)

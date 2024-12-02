@@ -36,14 +36,18 @@ class LocalFileBackend(backends.Backend):
     """
 
     @classmethod
-    def update_object(cls,
-                      updated_object: model.Referable,
-                      store_object: model.Referable,
-                      relative_path: List[str]) -> None:
+    def update_object(
+        cls,
+        updated_object: model.Referable,
+        store_object: model.Referable,
+        relative_path: List[str],
+    ) -> None:
 
         if not isinstance(store_object, model.Identifiable):
-            raise FileBackendSourceError("The given store_object is not Identifiable, therefore cannot be found "
-                                         "in the FileBackend")
+            raise FileBackendSourceError(
+                "The given store_object is not Identifiable, therefore cannot be found "
+                "in the FileBackend"
+            )
         file_name: str = store_object.source.replace("file://localhost/", "")
         with open(file_name, "r") as file:
             data = json.load(file, cls=json_deserialization.AASFromJsonDecoder)
@@ -51,16 +55,22 @@ class LocalFileBackend(backends.Backend):
             store_object.update_from(updated_store_object)
 
     @classmethod
-    def commit_object(cls,
-                      committed_object: model.Referable,
-                      store_object: model.Referable,
-                      relative_path: List[str]) -> None:
+    def commit_object(
+        cls,
+        committed_object: model.Referable,
+        store_object: model.Referable,
+        relative_path: List[str],
+    ) -> None:
         if not isinstance(store_object, model.Identifiable):
-            raise FileBackendSourceError("The given store_object is not Identifiable, therefore cannot be found "
-                                         "in the FileBackend")
+            raise FileBackendSourceError(
+                "The given store_object is not Identifiable, therefore cannot be found "
+                "in the FileBackend"
+            )
         file_name: str = store_object.source.replace("file://localhost/", "")
         with open(file_name, "w") as file:
-            json.dump({'data': store_object}, file, cls=json_serialization.AASToJsonEncoder, indent=4)
+            json.dump(
+                {"data": store_object}, file, cls=json_serialization.AASToJsonEncoder, indent=4
+            )
 
 
 backends.register_backend("file", LocalFileBackend)
@@ -71,6 +81,7 @@ class LocalFileObjectStore(model.AbstractObjectStore):
     An ObjectStore implementation for :class:`~basyx.aas.model.base.Identifiable` BaSyx Python SDK objects backed
     by a local file based local backend
     """
+
     def __init__(self, directory_path: str):
         """
         Initializer of class LocalFileObjectStore
@@ -84,8 +95,9 @@ class LocalFileObjectStore(model.AbstractObjectStore):
         # local replication of each object is kept in the application and retrieving an object from the store always
         # returns the **same** (not only equal) object. Still, objects are forgotten, when they are not referenced
         # anywhere else to save memory.
-        self._object_cache: weakref.WeakValueDictionary[model.Identifier, model.Identifiable] \
-            = weakref.WeakValueDictionary()
+        self._object_cache: weakref.WeakValueDictionary[model.Identifier, model.Identifiable] = (
+            weakref.WeakValueDictionary()
+        )
         self._object_cache_lock = threading.Lock()
 
     def check_directory(self, create=False):
@@ -96,7 +108,9 @@ class LocalFileObjectStore(model.AbstractObjectStore):
         """
         if not os.path.exists(self.directory_path):
             if not create:
-                raise FileNotFoundError("The given directory ({}) does not exist".format(self.directory_path))
+                raise FileNotFoundError(
+                    "The given directory ({}) does not exist".format(self.directory_path)
+                )
             # Create directory
             os.mkdir(self.directory_path)
             logger.info("Creating directory {}".format(self.directory_path))
@@ -114,7 +128,9 @@ class LocalFileObjectStore(model.AbstractObjectStore):
                 obj = data["data"]
                 self.generate_source(obj)
         except FileNotFoundError as e:
-            raise KeyError("No Identifiable with hash {} found in local file database".format(hash_)) from e
+            raise KeyError(
+                "No Identifiable with hash {} found in local file database".format(hash_)
+            ) from e
         # If we still have a local replication of that object (since it is referenced from anywhere else), update that
         # replication and return it.
         with self._object_cache_lock:
@@ -137,7 +153,9 @@ class LocalFileObjectStore(model.AbstractObjectStore):
         try:
             return self.get_identifiable_by_hash(self._transform_id(identifier))
         except KeyError as e:
-            raise KeyError("No Identifiable with id {} found in local file database".format(identifier)) from e
+            raise KeyError(
+                "No Identifiable with id {} found in local file database".format(identifier)
+            ) from e
 
     def add(self, x: model.Identifiable) -> None:
         """
@@ -147,7 +165,9 @@ class LocalFileObjectStore(model.AbstractObjectStore):
         """
         logger.debug("Adding object %s to Local File Store ...", repr(x))
         if os.path.exists("{}/{}.json".format(self.directory_path, self._transform_id(x.id))):
-            raise KeyError("Identifiable with id {} already exists in local file database".format(x.id))
+            raise KeyError(
+                "Identifiable with id {} already exists in local file database".format(x.id)
+            )
         with open("{}/{}.json".format(self.directory_path, self._transform_id(x.id)), "w") as file:
             json.dump({"data": x}, file, cls=json_serialization.AASToJsonEncoder, indent=4)
             with self._object_cache_lock:
@@ -165,7 +185,9 @@ class LocalFileObjectStore(model.AbstractObjectStore):
         try:
             os.remove("{}/{}.json".format(self.directory_path, self._transform_id(x.id)))
         except FileNotFoundError as e:
-            raise KeyError("No AAS object with id {} exists in local file database".format(x.id)) from e
+            raise KeyError(
+                "No AAS object with id {} exists in local file database".format(x.id)
+            ) from e
         with self._object_cache_lock:
             del self._object_cache[x.id]
         x.source = ""
@@ -186,7 +208,9 @@ class LocalFileObjectStore(model.AbstractObjectStore):
         else:
             return False
         logger.debug("Checking existence of object with id %s in database ...", repr(x))
-        return os.path.exists("{}/{}.json".format(self.directory_path, self._transform_id(identifier)))
+        return os.path.exists(
+            "{}/{}.json".format(self.directory_path, self._transform_id(identifier))
+        )
 
     def __len__(self) -> int:
         """
@@ -222,8 +246,7 @@ class LocalFileObjectStore(model.AbstractObjectStore):
         :param identifiable: Identifiable object
         """
         source: str = "file://localhost/{}/{}.json".format(
-            self.directory_path,
-            self._transform_id(identifiable.id)
+            self.directory_path, self._transform_id(identifiable.id)
         )
         identifiable.source = source
         return source
@@ -233,4 +256,5 @@ class FileBackendSourceError(Exception):
     """
     Raised, if the given object's source is not resolvable as a local file
     """
+
     pass

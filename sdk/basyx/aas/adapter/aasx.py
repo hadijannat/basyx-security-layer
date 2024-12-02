@@ -60,6 +60,7 @@ class AASXReader:
             reader.read_into(objects, files)
 
     """
+
     def __init__(self, file: Union[os.PathLike, str, IO]):
         """
         Open an AASX reader for the given filename or file handle
@@ -106,16 +107,22 @@ class AASXReader:
         :return: The AASX package thumbnail's file contents or None if no thumbnail is provided
         """
         try:
-            thumbnail_part = self.reader.get_related_parts_by_type()[pyecma376_2.RELATIONSHIP_TYPE_THUMBNAIL][0]
+            thumbnail_part = self.reader.get_related_parts_by_type()[
+                pyecma376_2.RELATIONSHIP_TYPE_THUMBNAIL
+            ][0]
         except IndexError:
             return None
 
         with self.reader.open_part(thumbnail_part) as p:
             return p.read()
 
-    def read_into(self, object_store: model.AbstractObjectStore,
-                  file_store: "AbstractSupplementaryFileContainer",
-                  override_existing: bool = False, **kwargs) -> Set[model.Identifier]:
+    def read_into(
+        self,
+        object_store: model.AbstractObjectStore,
+        file_store: "AbstractSupplementaryFileContainer",
+        override_existing: bool = False,
+        **kwargs,
+    ) -> Set[model.Identifier]:
         """
         Read the contents of the AASX package and add them into a given
         :class:`ObjectStore <basyx.aas.model.provider.AbstractObjectStore>`
@@ -149,15 +156,26 @@ class AASXReader:
 
         no_aas_files_found = True
         # Iterate AAS files
-        for aas_part in self.reader.get_related_parts_by_type(aasx_origin_part)[RELATIONSHIP_TYPE_AAS_SPEC]:
+        for aas_part in self.reader.get_related_parts_by_type(aasx_origin_part)[
+            RELATIONSHIP_TYPE_AAS_SPEC
+        ]:
             no_aas_files_found = False
-            self._read_aas_part_into(aas_part, object_store, file_store,
-                                     read_identifiables, override_existing, **kwargs)
+            self._read_aas_part_into(
+                aas_part, object_store, file_store, read_identifiables, override_existing, **kwargs
+            )
 
             # Iterate split parts of AAS file
-            for split_part in self.reader.get_related_parts_by_type(aas_part)[RELATIONSHIP_TYPE_AAS_SPEC_SPLIT]:
-                self._read_aas_part_into(split_part, object_store, file_store,
-                                         read_identifiables, override_existing, **kwargs)
+            for split_part in self.reader.get_related_parts_by_type(aas_part)[
+                RELATIONSHIP_TYPE_AAS_SPEC_SPLIT
+            ]:
+                self._read_aas_part_into(
+                    split_part,
+                    object_store,
+                    file_store,
+                    read_identifiables,
+                    override_existing,
+                    **kwargs,
+                )
         if no_aas_files_found:
             logger.warning("No AAS files found in AASX package")
 
@@ -175,11 +193,15 @@ class AASXReader:
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.close()
 
-    def _read_aas_part_into(self, part_name: str,
-                            object_store: model.AbstractObjectStore,
-                            file_store: "AbstractSupplementaryFileContainer",
-                            read_identifiables: Set[model.Identifier],
-                            override_existing: bool, **kwargs) -> None:
+    def _read_aas_part_into(
+        self,
+        part_name: str,
+        object_store: model.AbstractObjectStore,
+        file_store: "AbstractSupplementaryFileContainer",
+        read_identifiables: Set[model.Identifier],
+        override_existing: bool,
+        **kwargs,
+    ) -> None:
         """
         Helper function for :meth:`read_into()` to read and process the contents of an AAS-spec part of the AASX file.
 
@@ -200,11 +222,15 @@ class AASXReader:
                 continue
             if obj.id in object_store:
                 if override_existing:
-                    logger.info("Overriding existing object in  ObjectStore with {} ...".format(obj))
+                    logger.info(
+                        "Overriding existing object in  ObjectStore with {} ...".format(obj)
+                    )
                     object_store.discard(obj)
                 else:
-                    logger.warning("Skipping {}, since an object with the same id is already contained in the "
-                                   "ObjectStore".format(obj))
+                    logger.warning(
+                        "Skipping {}, since an object with the same id is already contained in the "
+                        "ObjectStore".format(obj)
+                    )
                     continue
             object_store.add(obj)
             read_identifiables.add(obj.id)
@@ -222,22 +248,38 @@ class AASXReader:
         """
         content_type = self.reader.get_content_type(part_name)
         extension = part_name.split("/")[-1].split(".")[-1]
-        if content_type.split(";")[0] in ("text/xml", "application/xml") or content_type == "" and extension == "xml":
+        if (
+            content_type.split(";")[0] in ("text/xml", "application/xml")
+            or content_type == ""
+            and extension == "xml"
+        ):
             logger.debug("Parsing AAS objects from XML stream in OPC part {} ...".format(part_name))
             with self.reader.open_part(part_name) as p:
                 return read_aas_xml_file(p, **kwargs)
-        elif content_type.split(";")[0] in ("text/json", "application/json") \
-                or content_type == "" and extension == "json":
-            logger.debug("Parsing AAS objects from JSON stream in OPC part {} ...".format(part_name))
+        elif (
+            content_type.split(";")[0] in ("text/json", "application/json")
+            or content_type == ""
+            and extension == "json"
+        ):
+            logger.debug(
+                "Parsing AAS objects from JSON stream in OPC part {} ...".format(part_name)
+            )
             with self.reader.open_part(part_name) as p:
-                return read_aas_json_file(io.TextIOWrapper(p, encoding='utf-8-sig'), **kwargs)
+                return read_aas_json_file(io.TextIOWrapper(p, encoding="utf-8-sig"), **kwargs)
         else:
-            logger.error("Could not determine part format of AASX part {} (Content Type: {}, extension: {}"
-                         .format(part_name, content_type, extension))
+            logger.error(
+                "Could not determine part format of AASX part {} (Content Type: {}, extension: {}".format(
+                    part_name, content_type, extension
+                )
+            )
             return model.DictObjectStore()
 
-    def _collect_supplementary_files(self, part_name: str, submodel: model.Submodel,
-                                     file_store: "AbstractSupplementaryFileContainer") -> None:
+    def _collect_supplementary_files(
+        self,
+        part_name: str,
+        submodel: model.Submodel,
+        file_store: "AbstractSupplementaryFileContainer",
+    ) -> None:
         """
         Helper function to search File objects within a single parsed Submodel, extract the referenced supplementary
         files and update the File object's values with the absolute path.
@@ -254,14 +296,21 @@ class AASXReader:
                 # Only absolute-path references and relative-path URI references (see RFC 3986, sec. 4.2) are considered
                 # to refer to files within the AASX package. Thus, we must skip all other types of URIs (esp. absolute
                 # URIs and network-path references)
-                if element.value.startswith('//') or ':' in element.value.split('/')[0]:
-                    logger.info("Skipping supplementary file %s, since it seems to be an absolute URI or network-path "
-                                "URI reference", element.value)
+                if element.value.startswith("//") or ":" in element.value.split("/")[0]:
+                    logger.info(
+                        "Skipping supplementary file %s, since it seems to be an absolute URI or network-path "
+                        "URI reference",
+                        element.value,
+                    )
                     continue
                 absolute_name = pyecma376_2.package_model.part_realpath(element.value, part_name)
-                logger.debug("Reading supplementary file {} from AASX package ...".format(absolute_name))
+                logger.debug(
+                    "Reading supplementary file {} from AASX package ...".format(absolute_name)
+                )
                 with self.reader.open_part(absolute_name) as p:
-                    final_name = file_store.add_file(absolute_name, p, self.reader.get_content_type(absolute_name))
+                    final_name = file_store.add_file(
+                        absolute_name, p, self.reader.get_content_type(absolute_name)
+                    )
                 element.value = final_name
 
 
@@ -293,6 +342,7 @@ class AASXWriter:
         functionality (as shown above). Otherwise, the resulting AASX file will lack important data structures
         and will not be readable.
     """
+
     AASX_ORIGIN_PART_NAME = "/aasx/aasx-origin"
 
     def __init__(self, file: Union[os.PathLike, str, IO]):
@@ -322,11 +372,13 @@ class AASXWriter:
         p = self.writer.open_part(self.AASX_ORIGIN_PART_NAME, "text/plain")
         p.close()
 
-    def write_aas(self,
-                  aas_ids: Union[model.Identifier, Iterable[model.Identifier]],
-                  object_store: model.AbstractObjectStore,
-                  file_store: "AbstractSupplementaryFileContainer",
-                  write_json: bool = False) -> None:
+    def write_aas(
+        self,
+        aas_ids: Union[model.Identifier, Iterable[model.Identifier]],
+        object_store: model.AbstractObjectStore,
+        file_store: "AbstractSupplementaryFileContainer",
+        write_json: bool = False,
+    ) -> None:
         """
         Convenience method to write one or more
         :class:`AssetAdministrationShells <basyx.aas.model.aas.AssetAdministrationShell>` with all included
@@ -382,8 +434,10 @@ class AASXWriter:
             except KeyError:
                 raise
             if not isinstance(aas, model.AssetAdministrationShell):
-                raise TypeError(f"Identifier {aas_id} does not belong to an AssetAdministrationShell object but to "
-                                f"{aas!r}")
+                raise TypeError(
+                    f"Identifier {aas_id} does not belong to an AssetAdministrationShell object but to "
+                    f"{aas!r}"
+                )
 
             # Add the AssetAdministrationShell object to the data part
             objects_to_be_written.add(aas)
@@ -402,36 +456,52 @@ class AASXWriter:
         concept_descriptions: List[model.ConceptDescription] = []
         for identifiable in objects_to_be_written:
             for semantic_id in traversal.walk_semantic_ids_recursive(identifiable):
-                if not isinstance(semantic_id, model.ModelReference) \
-                        or semantic_id.type is not model.ConceptDescription:
-                    logger.info("semanticId %s does not reference a ConceptDescription.", str(semantic_id))
+                if (
+                    not isinstance(semantic_id, model.ModelReference)
+                    or semantic_id.type is not model.ConceptDescription
+                ):
+                    logger.info(
+                        "semanticId %s does not reference a ConceptDescription.", str(semantic_id)
+                    )
                     continue
                 try:
                     cd = semantic_id.resolve(object_store)
                 except KeyError:
-                    logger.info("ConceptDescription for semanticId %s not found in object store.", str(semantic_id))
+                    logger.info(
+                        "ConceptDescription for semanticId %s not found in object store.",
+                        str(semantic_id),
+                    )
                     continue
                 except model.UnexpectedTypeError as e:
-                    logger.error("semanticId %s resolves to %s, which is not a ConceptDescription",
-                                 str(semantic_id), e.value)
+                    logger.error(
+                        "semanticId %s resolves to %s, which is not a ConceptDescription",
+                        str(semantic_id),
+                        e.value,
+                    )
                     continue
                 concept_descriptions.append(cd)
         objects_to_be_written.update(concept_descriptions)
 
         # Write AAS data part
-        self.write_all_aas_objects("/aasx/data.{}".format("json" if write_json else "xml"),
-                                   objects_to_be_written, file_store, write_json)
+        self.write_all_aas_objects(
+            "/aasx/data.{}".format("json" if write_json else "xml"),
+            objects_to_be_written,
+            file_store,
+            write_json,
+        )
 
     # TODO remove `method` parameter in future version.
     #   Not actually required since you can always create a local dict
-    def write_aas_objects(self,
-                          part_name: str,
-                          object_ids: Iterable[model.Identifier],
-                          object_store: model.AbstractObjectStore,
-                          file_store: "AbstractSupplementaryFileContainer",
-                          write_json: bool = False,
-                          split_part: bool = False,
-                          additional_relationships: Iterable[pyecma376_2.OPCRelationship] = ()) -> None:
+    def write_aas_objects(
+        self,
+        part_name: str,
+        object_ids: Iterable[model.Identifier],
+        object_store: model.AbstractObjectStore,
+        file_store: "AbstractSupplementaryFileContainer",
+        write_json: bool = False,
+        split_part: bool = False,
+        additional_relationships: Iterable[pyecma376_2.OPCRelationship] = (),
+    ) -> None:
         """
         A thin wrapper around :meth:`write_all_aas_objects` to ensure downwards compatibility
 
@@ -476,17 +546,21 @@ class AASXWriter:
                 continue
             objects.add(the_object)
 
-        self.write_all_aas_objects(part_name, objects, file_store, write_json, split_part, additional_relationships)
+        self.write_all_aas_objects(
+            part_name, objects, file_store, write_json, split_part, additional_relationships
+        )
 
     # TODO remove `split_part` parameter in future version.
     #   Not required anymore since changes from DotAAS version 2.0.1 to 3.0RC01
-    def write_all_aas_objects(self,
-                              part_name: str,
-                              objects: model.AbstractObjectStore[model.Identifiable],
-                              file_store: "AbstractSupplementaryFileContainer",
-                              write_json: bool = False,
-                              split_part: bool = False,
-                              additional_relationships: Iterable[pyecma376_2.OPCRelationship] = ()) -> None:
+    def write_all_aas_objects(
+        self,
+        part_name: str,
+        objects: model.AbstractObjectStore[model.Identifiable],
+        file_store: "AbstractSupplementaryFileContainer",
+        write_json: bool = False,
+        split_part: bool = False,
+        additional_relationships: Iterable[pyecma376_2.OPCRelationship] = (),
+    ) -> None:
         """
         Write all AAS objects in a given :class:`ObjectStore <basyx.aas.model.provider.AbstractObjectStore>` to an XML
         or JSON part in the AASX package and add the referenced supplementary files to the package.
@@ -525,7 +599,11 @@ class AASXWriter:
                         file_name = element.value
                         # Skip File objects with empty value URI references that are considered to be no local file
                         # (absolute URIs or network-path URI references)
-                        if file_name is None or file_name.startswith('//') or ':' in file_name.split('/')[0]:
+                        if (
+                            file_name is None
+                            or file_name.startswith("//")
+                            or ":" in file_name.split("/")[0]
+                        ):
                             continue
                         supplementary_files.append(file_name)
 
@@ -535,9 +613,11 @@ class AASXWriter:
 
         # Write part
         # TODO allow writing xml *and* JSON part
-        with self.writer.open_part(part_name, "application/json" if write_json else "application/xml") as p:
+        with self.writer.open_part(
+            part_name, "application/json" if write_json else "application/xml"
+        ) as p:
             if write_json:
-                write_aas_json_file(io.TextIOWrapper(p, encoding='utf-8'), objects)
+                write_aas_json_file(io.TextIOWrapper(p, encoding="utf-8"), objects)
             else:
                 write_aas_xml_file(p, objects)
 
@@ -554,25 +634,40 @@ class AASXWriter:
             if self._supplementary_part_names.get(file_name) == hash:
                 continue
             elif file_name in self._supplementary_part_names:
-                logger.error("Trying to write supplementary file {} to AASX twice with different contents"
-                             .format(file_name))
+                logger.error(
+                    "Trying to write supplementary file {} to AASX twice with different contents".format(
+                        file_name
+                    )
+                )
             logger.debug("Writing supplementary file {} to AASX package ...".format(file_name))
             with self.writer.open_part(file_name, content_type) as p:
                 file_store.write_file(file_name, p)
-            supplementary_file_names.append(pyecma376_2.package_model.normalize_part_name(file_name))
+            supplementary_file_names.append(
+                pyecma376_2.package_model.normalize_part_name(file_name)
+            )
             self._supplementary_part_names[file_name] = hash
 
         # Add relationships from submodel to supplementary parts
-        logger.debug("Writing aas-suppl relationships for AAS object part {} to AASX package ...".format(part_name))
+        logger.debug(
+            "Writing aas-suppl relationships for AAS object part {} to AASX package ...".format(
+                part_name
+            )
+        )
         self.writer.write_relationships(
             itertools.chain(
-                (pyecma376_2.OPCRelationship("r{}".format(i),
-                                             RELATIONSHIP_TYPE_AAS_SUPL,
-                                             submodel_file_name,
-                                             pyecma376_2.OPCTargetMode.INTERNAL)
-                 for i, submodel_file_name in enumerate(supplementary_file_names)),
-                additional_relationships),
-            part_name)
+                (
+                    pyecma376_2.OPCRelationship(
+                        "r{}".format(i),
+                        RELATIONSHIP_TYPE_AAS_SUPL,
+                        submodel_file_name,
+                        pyecma376_2.OPCTargetMode.INTERNAL,
+                    )
+                    for i, submodel_file_name in enumerate(supplementary_file_names)
+                ),
+                additional_relationships,
+            ),
+            part_name,
+        )
 
     def write_core_properties(self, core_properties: pyecma376_2.OPCCoreProperties):
         """
@@ -586,7 +681,9 @@ class AASXWriter:
         if self._properties_part is not None:
             raise RuntimeError("Core Properties have already been written.")
         logger.debug("Writing core properties to AASX package ...")
-        with self.writer.open_part(pyecma376_2.DEFAULT_CORE_PROPERTIES_NAME, "application/xml") as p:
+        with self.writer.open_part(
+            pyecma376_2.DEFAULT_CORE_PROPERTIES_NAME, "application/xml"
+        ) as p:
             core_properties.write_xml(p)
         self._properties_part = pyecma376_2.DEFAULT_CORE_PROPERTIES_NAME
 
@@ -602,7 +699,9 @@ class AASXWriter:
         :param content_type: OPC content type (MIME type) of the image file
         """
         if self._thumbnail_part is not None:
-            raise RuntimeError("package thumbnail has already been written to {}.".format(self._thumbnail_part))
+            raise RuntimeError(
+                "package thumbnail has already been written to {}.".format(self._thumbnail_part)
+            )
         with self.writer.open_part(name, content_type) as p:
             p.write(data)
         self._thumbnail_part = name
@@ -631,11 +730,17 @@ class AASXWriter:
         # Add relationships from AASX-origin part to AAS parts
         logger.debug("Writing aas-spec relationships to AASX package ...")
         self.writer.write_relationships(
-            (pyecma376_2.OPCRelationship("r{}".format(i), RELATIONSHIP_TYPE_AAS_SPEC,
-                                         aas_part_name,
-                                         pyecma376_2.OPCTargetMode.INTERNAL)
-             for i, aas_part_name in enumerate(self._aas_part_names)),
-            self.AASX_ORIGIN_PART_NAME)
+            (
+                pyecma376_2.OPCRelationship(
+                    "r{}".format(i),
+                    RELATIONSHIP_TYPE_AAS_SPEC,
+                    aas_part_name,
+                    pyecma376_2.OPCTargetMode.INTERNAL,
+                )
+                for i, aas_part_name in enumerate(self._aas_part_names)
+            ),
+            self.AASX_ORIGIN_PART_NAME,
+        )
 
     def _write_package_relationships(self):
         """
@@ -649,18 +754,31 @@ class AASXWriter:
         """
         logger.debug("Writing package relationships to AASX package ...")
         package_relationships: List[pyecma376_2.OPCRelationship] = [
-            pyecma376_2.OPCRelationship("r1", RELATIONSHIP_TYPE_AASX_ORIGIN,
-                                        self.AASX_ORIGIN_PART_NAME,
-                                        pyecma376_2.OPCTargetMode.INTERNAL),
+            pyecma376_2.OPCRelationship(
+                "r1",
+                RELATIONSHIP_TYPE_AASX_ORIGIN,
+                self.AASX_ORIGIN_PART_NAME,
+                pyecma376_2.OPCTargetMode.INTERNAL,
+            ),
         ]
         if self._properties_part is not None:
-            package_relationships.append(pyecma376_2.OPCRelationship(
-                "r2", pyecma376_2.RELATIONSHIP_TYPE_CORE_PROPERTIES, self._properties_part,
-                pyecma376_2.OPCTargetMode.INTERNAL))
+            package_relationships.append(
+                pyecma376_2.OPCRelationship(
+                    "r2",
+                    pyecma376_2.RELATIONSHIP_TYPE_CORE_PROPERTIES,
+                    self._properties_part,
+                    pyecma376_2.OPCTargetMode.INTERNAL,
+                )
+            )
         if self._thumbnail_part is not None:
-            package_relationships.append(pyecma376_2.OPCRelationship(
-                "r3", pyecma376_2.RELATIONSHIP_TYPE_THUMBNAIL, self._thumbnail_part,
-                pyecma376_2.OPCTargetMode.INTERNAL))
+            package_relationships.append(
+                pyecma376_2.OPCRelationship(
+                    "r3",
+                    pyecma376_2.RELATIONSHIP_TYPE_THUMBNAIL,
+                    self._thumbnail_part,
+                    pyecma376_2.OPCTargetMode.INTERNAL,
+                )
+            )
         self.writer.write_relationships(package_relationships)
 
 
@@ -677,6 +795,7 @@ class AbstractSupplementaryFileContainer(metaclass=abc.ABCMeta):
     new file. It also provides each files sha256 hash sum to allow name conflict checking in other classes (e.g. when
     writing AASX files).
     """
+
     @abc.abstractmethod
     def add_file(self, name: str, file: IO[bytes], content_type: str) -> str:
         """
@@ -756,6 +875,7 @@ class DictSupplementaryFileContainer(AbstractSupplementaryFileContainer):
     """
     SupplementaryFileContainer implementation using a dict to store the file contents in-memory.
     """
+
     def __init__(self):
         # Stores the files' contents, identified by their sha256 hash
         self._store: Dict[bytes, bytes] = {}
@@ -786,8 +906,8 @@ class DictSupplementaryFileContainer(AbstractSupplementaryFileContainer):
 
     @staticmethod
     def _append_counter(name: str, i: int) -> str:
-        split1 = name.split('/')
-        split2 = split1[-1].split('.')
+        split1 = name.split("/")
+        split2 = split1[-1].split(".")
         index = -2 if len(split2) > 1 else -1
         new_basename = "{}_{:04d}".format(split2[index], i)
         split2[index] = new_basename

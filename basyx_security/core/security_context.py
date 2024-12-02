@@ -8,11 +8,12 @@ from datetime import datetime, timezone
 
 from .enums import SecurityLevel
 
+
 @dataclass
 class SecurityContext:
     """
     Represents the security context for access control decisions.
-    
+
     Attributes:
         user_id: Unique identifier of the user
         roles: Set of roles assigned to the user
@@ -20,17 +21,16 @@ class SecurityContext:
         timestamp: When the context was created
         token: Optional authentication token
     """
+
     user_id: str
     roles: Set[str]
     security_level: SecurityLevel
     timestamp: datetime
     token: Optional[str] = None
 
+
 def create_security_context(
-    user_id: str,
-    roles: Set[str],
-    security_level: SecurityLevel,
-    token: Optional[str] = None
+    user_id: str, roles: Set[str], security_level: SecurityLevel, token: Optional[str] = None
 ) -> SecurityContext:
     """
     Create a new security context.
@@ -49,5 +49,5 @@ def create_security_context(
         roles=roles,
         security_level=security_level,
         timestamp=datetime.now(timezone.utc),
-        token=token
-    ) 
+        token=token,
+    )

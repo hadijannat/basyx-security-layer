@@ -3,7 +3,7 @@ Security manager implementation for BaSyx Security Layer.
 """
 
 from typing import Dict, Optional, Set
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 
 from .enums import SecurityLevel, AccessRight
 from .security_context import SecurityContext
@@ -39,7 +39,7 @@ class SecurityManager:
         self._security_policies[resource_id] = level
         
         self._audit_log.log_event(AuditEvent(
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             event_type='policy_change',
             user_id='SYSTEM',
             resource_id=resource_id,
@@ -68,7 +68,7 @@ class SecurityManager:
         self._role_permissions[role][resource_id] = access
         
         self._audit_log.log_event(AuditEvent(
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             event_type='policy_change',
             user_id='SYSTEM',
             resource_id=resource_id,
@@ -108,7 +108,7 @@ class SecurityManager:
         
         if context.security_level.value < required_level.value:
             self._audit_log.log_event(AuditEvent(
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 event_type='access_denied',
                 user_id=context.user_id,
                 resource_id=resource_id,
@@ -137,7 +137,7 @@ class SecurityManager:
         
         if not has_permission:
             self._audit_log.log_event(AuditEvent(
-                timestamp=datetime.now(UTC),
+                timestamp=datetime.now(timezone.utc),
                 event_type='access_denied',
                 user_id=context.user_id,
                 resource_id=resource_id,
@@ -151,7 +151,7 @@ class SecurityManager:
         
         # Log successful access
         self._audit_log.log_event(AuditEvent(
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
             event_type='access_granted',
             user_id=context.user_id,
             resource_id=resource_id,

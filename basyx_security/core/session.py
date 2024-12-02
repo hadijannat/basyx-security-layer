@@ -7,7 +7,7 @@ import uuid
 from typing import Dict, Optional, Set
 from dataclasses import dataclass
 from threading import Lock, Thread
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 @dataclass
 class Session:
@@ -76,7 +76,7 @@ class SessionManager:
         Returns:
             New session object
         """
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         session = Session(
             session_id=str(uuid.uuid4()),
             user_id=user_id,
@@ -109,7 +109,7 @@ class SessionManager:
             if not session:
                 return None
                 
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             if now > session.expires_at:
                 self._remove_session(session)
                 return None
@@ -162,7 +162,7 @@ class SessionManager:
             time.sleep(self._cleanup_interval.total_seconds())
             
             with self._lock:
-                now = datetime.utcnow()
+                now = datetime.now(timezone.utc)
                 expired = [
                     session for session in self._sessions.values()
                     if now > session.expires_at

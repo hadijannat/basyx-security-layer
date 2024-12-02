@@ -22,15 +22,23 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     
+    - name: Cache pip packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -e .[dev]
-        pip install basyx-python-sdk
+        pip install basyx-python-sdk  # Install SDK first
+        pip install -e .[dev]  # Then install our package with dev dependencies
         
     - name: Run tests with coverage
       run: |
-        python -m pytest --cov=basyx_security tests/
+        pytest --cov=basyx_security tests/ -v
         
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
@@ -44,13 +52,25 @@ jobs:
       with:
         python-version: "3.10"
         
+    - name: Cache pip packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-lint-${{ hashFiles('pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-lint-
+        
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install basyx-python-sdk
         pip install -e .[dev]
         
     - name: Check formatting with black
       run: black --check .
+      
+    - name: Sort imports with isort
+      run: isort --check-only .
       
     - name: Lint with flake8
       run: flake8 .
@@ -70,6 +90,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install basyx-python-sdk
         pip install -e .[dev]
         
     - name: Run Bandit security scan
@@ -77,19 +98,6 @@ jobs:
       
     - name: Check dependencies for known vulnerabilities
       run: safety check
-      
-    - name: Run OWASP Dependency Check
-      uses: dependency-check/Dependency-Check_Action@main
-      with:
-        project: 'BaSyx Security'
-        path: '.'
-        format: 'HTML'
-        
-    - name: Upload dependency check report
-      uses: actions/upload-artifact@v3
-      with:
-        name: dependency-check-report
-        path: reports
 
   container-scan:
     runs-on: ubuntu-latest

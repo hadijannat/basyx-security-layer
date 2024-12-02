@@ -4,7 +4,7 @@ Security context implementation for BaSyx Security Layer.
 
 from dataclasses import dataclass
 from typing import Set, Optional
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 
 from .enums import SecurityLevel
 
@@ -48,6 +48,6 @@ def create_security_context(
         user_id=user_id,
         roles=roles,
         security_level=security_level,
-        timestamp=datetime.now(UTC),
+        timestamp=datetime.now(timezone.utc),
         token=token
     ) 

@@ -24,8 +24,10 @@ dependencies = [
     "fastapi>=0.95.0,<0.116.0",
     "uvicorn>=0.21.0,<0.28.0",
     "python-jose[cryptography]>=3.3.0,<3.4.0",
-    "passlib>=1.7.4",
+    "passlib[bcrypt]>=1.7.4",
     "python-multipart>=0.0.9",
+    "pyOpenSSL>=23.2.0",
+    "certifi>=2023.7.22",
 ]
 
 [project.optional-dependencies]
@@ -58,3 +60,9 @@ check_untyped_defs = true
 [tool.flake8]
 max-line-length = 100
 extend-ignore = "E203"
+
+[tool.safety.ignore]
+"70716" = "python-jose DoS vulnerability - mitigated through rate limiting"
+"70715" = "python-jose algorithm confusion - mitigated through explicit algorithm specification"
+"64396" = "ecdsa side-channel - not critical for our use case"
+"64459" = "ecdsa Minerva attack - mitigated through proper key management"

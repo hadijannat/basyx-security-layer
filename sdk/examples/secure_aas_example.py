@@ -3,6 +3,7 @@ Example demonstrating the secure AAS implementation.
 """
 
 from basyx.aas import model
+
 from basyx.security import (
     AccessRight,
     SecureAAS,

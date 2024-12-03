@@ -11,11 +11,7 @@ import unittest
 from typing import Set, Union
 
 from basyx.aas import model
-from basyx.aas.adapter.json import (
-    AASToJsonEncoder,
-    StrippedAASToJsonEncoder,
-    write_aas_json_file,
-)
+from basyx.aas.adapter.json import AASToJsonEncoder, StrippedAASToJsonEncoder, write_aas_json_file
 from basyx.aas.examples.data import (
     create_example,
     example_aas,

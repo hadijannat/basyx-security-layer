@@ -43,18 +43,7 @@ import enum
 import io
 import itertools
 import json
-from typing import (
-    Callable,
-    Dict,
-    Iterable,
-    Iterator,
-    List,
-    Optional,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-)
+from typing import Callable, Dict, Iterable, Iterator, List, Optional, Tuple, Type, TypeVar, Union
 
 import werkzeug.exceptions
 import werkzeug.routing
@@ -69,17 +58,8 @@ from werkzeug.wrappers import Request, Response
 
 from . import aasx
 from ._generic import XML_NS_MAP
-from .json import (
-    AASToJsonEncoder,
-    StrictAASFromJsonDecoder,
-    StrictStrippedAASFromJsonDecoder,
-)
-from .xml import (
-    XMLConstructables,
-    object_to_xml_element,
-    read_aas_xml_element,
-    xml_serialization,
-)
+from .json import AASToJsonEncoder, StrictAASFromJsonDecoder, StrictStrippedAASFromJsonDecoder
+from .xml import XMLConstructables, object_to_xml_element, read_aas_xml_element, xml_serialization
 
 
 @enum.unique

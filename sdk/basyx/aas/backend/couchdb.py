@@ -18,17 +18,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import weakref
-from typing import (
-    Any,
-    Dict,
-    Iterable,
-    Iterator,
-    List,
-    MutableMapping,
-    Optional,
-    Tuple,
-    Union,
-)
+from typing import Any, Dict, Iterable, Iterator, List, MutableMapping, Optional, Tuple, Union
 
 import urllib3  # type: ignore
 from basyx.aas import model

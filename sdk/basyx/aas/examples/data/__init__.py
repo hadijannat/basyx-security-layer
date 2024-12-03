@@ -18,10 +18,10 @@ example_submodel_template.py
 
 from ._helper import AASDataChecker
 from .example_aas import (
-    create_example_submodel,
-    create_full_example,
     check_example_submodel,
     check_full_example,
+    create_example_submodel,
+    create_full_example,
 )
 from .example_aas_mandatory_attributes import create_example_aas_mandatory_attributes
 from .example_aas_missing_attributes import create_example_aas_missing_attributes

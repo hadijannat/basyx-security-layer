@@ -8,10 +8,7 @@
 import unittest
 
 from basyx.aas import model
-from basyx.aas.util.identification import (
-    UUIDGenerator,
-    NamespaceIRIGenerator,
-)
+from basyx.aas.util.identification import NamespaceIRIGenerator, UUIDGenerator
 
 
 class IdentifierGeneratorTest(unittest.TestCase):

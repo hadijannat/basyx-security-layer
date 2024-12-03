@@ -11,29 +11,27 @@ def create_example_aas():
     """Create a simple AAS with a temperature sensor."""
     # Create a property for temperature
     temperature = model.Property(
-        id_short='Temperature',
-        value_type=model.datatypes.Double,
-        value=25.5
+        id_short="Temperature", value_type=model.datatypes.Double, value=25.5
     )
-    
+
     # Create a submodel
     submodel = model.Submodel(
-        id_='https://example.com/sensors/temperature',
-        id_short='TemperatureSensor',
-        submodel_element={temperature}
+        id_="https://example.com/sensors/temperature",
+        id_short="TemperatureSensor",
+        submodel_element={temperature},
     )
-    
+
     # Create the AAS
     aas = model.AssetAdministrationShell(
-        id_='https://example.com/aas/sensor1',
-        id_short='Sensor1',
+        id_="https://example.com/aas/sensor1",
+        id_short="Sensor1",
         asset_information=model.AssetInformation(
             global_asset_id="https://example.com/assets/sensor1",
-            asset_kind=model.AssetKind.INSTANCE
+            asset_kind=model.AssetKind.INSTANCE,
         ),
-        submodel={model.ModelReference.from_referable(submodel)}
+        submodel={model.ModelReference.from_referable(submodel)},
     )
-    
+
     return aas, submodel
 
 
@@ -45,69 +43,38 @@ def main():
 
     # Set up security policies
     security_manager.set_security_policy(
-        'Sensor1',  # Using id_short instead of full URI
-        SecurityLevel.MEDIUM
+        "Sensor1", SecurityLevel.MEDIUM  # Using id_short instead of full URI
     )
     security_manager.set_security_policy(
-        'TemperatureSensor',  # Using id_short instead of full URI
-        SecurityLevel.HIGH
+        "TemperatureSensor", SecurityLevel.HIGH  # Using id_short instead of full URI
     )
     security_manager.set_security_policy(
-        'Temperature',  # Property security level
-        SecurityLevel.HIGH
+        "Temperature", SecurityLevel.HIGH  # Property security level
     )
 
     # Set up role permissions for admin
-    security_manager.set_role_permissions(
-        'admin',
-        'Sensor1',
-        AccessRight.FULL
-    )
-    security_manager.set_role_permissions(
-        'admin',
-        'TemperatureSensor',
-        AccessRight.FULL
-    )
-    security_manager.set_role_permissions(
-        'admin',
-        'Temperature',
-        AccessRight.FULL
-    )
+    security_manager.set_role_permissions("admin", "Sensor1", AccessRight.FULL)
+    security_manager.set_role_permissions("admin", "TemperatureSensor", AccessRight.FULL)
+    security_manager.set_role_permissions("admin", "Temperature", AccessRight.FULL)
 
     # Set up role permissions for operator
-    security_manager.set_role_permissions(
-        'operator',
-        'Sensor1',
-        AccessRight.READ
-    )
-    security_manager.set_role_permissions(
-        'operator',
-        'TemperatureSensor',
-        AccessRight.READ
-    )
-    security_manager.set_role_permissions(
-        'operator',
-        'Temperature',
-        AccessRight.READ
-    )
+    security_manager.set_role_permissions("operator", "Sensor1", AccessRight.READ)
+    security_manager.set_role_permissions("operator", "TemperatureSensor", AccessRight.READ)
+    security_manager.set_role_permissions("operator", "Temperature", AccessRight.READ)
 
     # Create a provider for submodels
-    provider = DictProvider({'https://example.com/sensors/temperature': submodel})
+    provider = DictProvider({"https://example.com/sensors/temperature": submodel})
 
     # Create secure AAS instance
     secure_aas = SecureAAS(aas, security_manager, provider)
 
     # Create security contexts for different roles
     admin_context = create_security_context(
-        user_id="admin1",
-        roles={"admin"},
-        security_level=SecurityLevel.HIGH
+        user_id="admin1", roles={"admin"}, security_level=SecurityLevel.HIGH
     )
 
     operator_context = create_security_context(
-        user_id="operator1",
-        roles={"operator"},
-        security_level=SecurityLevel.MEDIUM
+        user_id="operator1", roles={"operator"}, security_level=SecurityLevel.MEDIUM
     )
 
     # Demonstrate access control
@@ -116,16 +83,16 @@ def main():
         submodel = secure_aas.get_submodel(admin_context, "TemperatureSensor")
         temp_element = submodel.get_element(admin_context, "Temperature")
         print(f"Current temperature: {temp_element.get_value(admin_context)}")
-        
+
         # Update value as admin
         temp_element.set_value(admin_context, 26.5)
         print(f"Updated temperature: {temp_element.get_value(admin_context)}")
-        
+
         print("\nTesting operator access:")
         submodel = secure_aas.get_submodel(operator_context, "TemperatureSensor")
         temp_element = submodel.get_element(operator_context, "Temperature")
         print(f"Temperature read by operator: {temp_element.get_value(operator_context)}")
-        
+
         # Try to update value as operator (should fail)
         print("\nTesting operator write access (should fail):")
         try:
@@ -133,10 +100,10 @@ def main():
             print("Unexpected: Operator should not be able to write")
         except Exception as e:
             print(f"Expected error for operator write: {str(e)}")
-            
+
     except Exception as e:
         print(f"Error: {str(e)}")
 
 
 if __name__ == "__main__":
-    main() 
+    main()

@@ -1,23 +1,30 @@
 # Copyright (c) 2022 the Eclipse BaSyx Authors
 #
-# This program and the accompanying materials are made available under the terms of the MIT License, available in
-# the LICENSE file of this project.
+# This program and the accompanying materials are made available under the terms of the MIT License,
+# available in the LICENSE file of this project.
 #
 # SPDX-License-Identifier: MIT
 
 import unittest
 
 from basyx.aas import model
-from basyx.aas.util.identification import *
+from basyx.aas.util.identification import (
+    UUIDGenerator,
+    NamespaceIRIGenerator,
+)
 
 
 class IdentifierGeneratorTest(unittest.TestCase):
+
     def test_generate_uuid_identifier(self):
         generator = UUIDGenerator()
         identification = generator.generate_id()
         self.assertRegex(
             identification,
-            r"urn:uuid:[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}",
+            (
+                r"urn:uuid:[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}"
+                r"\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}"
+            ),
         )
         ids = set()
         for i in range(100):

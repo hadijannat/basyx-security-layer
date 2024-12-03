@@ -30,12 +30,14 @@ def _serialize_and_deserialize(data: model.DictObjectStore) -> model.DictObjectS
     file = io.BytesIO()
     write_aas_xml_file(file=file, data=data)
 
-    # try deserializing the xml document into a DictObjectStore of AAS objects with help of the xml module
+    # try deserializing the xml document into a DictObjectStore of AAS objects
+    # with help of the xml module
     file.seek(0)
     return read_aas_xml_file(file, failsafe=False)
 
 
 class XMLSerializationDeserializationTest(unittest.TestCase):
+
     def test_example_serialization_deserialization(self) -> None:
         object_store = _serialize_and_deserialize(example_aas.create_full_example())
         checker = AASDataChecker(raise_immediately=True)
@@ -70,6 +72,7 @@ class XMLSerializationDeserializationTest(unittest.TestCase):
 
 
 class XMLSerializationDeserializationSingleObjectTest(unittest.TestCase):
+
     def test_submodel_serialization_deserialization(self) -> None:
         submodel: model.Submodel = example_submodel_template.create_example_submodel_template()
         bytes_io = io.BytesIO()

@@ -22,6 +22,7 @@ source_core: str = (
 
 
 class CouchDBBackendOfflineMethodsTest(unittest.TestCase):
+
     def test_parse_source(self):
         couchdb.register_credentials(
             url="couchdb.plt.rwth-aachen.de:5984", username="test_user", password="test_password"
@@ -58,6 +59,7 @@ class CouchDBBackendOfflineMethodsTest(unittest.TestCase):
     ),
 )
 class CouchDBBackendTest(unittest.TestCase):
+
     def setUp(self) -> None:
         self.object_store = couchdb.CouchDBObjectStore(
             TEST_CONFIG["couchdb"]["url"], TEST_CONFIG["couchdb"]["database"]
@@ -204,7 +206,8 @@ class CouchDBBackendTest(unittest.TestCase):
         self.object_store.discard(retrieved_submodel, False)
         self.assertEqual(0, len(self.object_store))
 
-        # Committing after deletion should not raise a conflict error due to removal of the source attribute
+        # Committing after deletion should not raise a conflict error due to
+        # removal of the source attribute
         retrieved_submodel.commit()
 
     def test_editing(self):

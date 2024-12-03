@@ -18,7 +18,6 @@ objects by id and resolving references.
 # Step 3: retrieving objects from the store by their identifier
 # Step 4: using the ObjectStore to resolve a reference
 
-
 from basyx.aas import model
 from basyx.aas.model import AssetAdministrationShell, AssetInformation, Submodel
 
@@ -52,7 +51,6 @@ aas = AssetAdministrationShell(
     submodel={model.ModelReference.from_referable(submodel)},
 )
 
-
 ##################################################################
 # Step 2: Storing the Data in an ObjectStore for Easier Handling #
 ##################################################################
@@ -73,7 +71,6 @@ obj_store: model.DictObjectStore[model.Identifiable] = model.DictObjectStore()
 obj_store.add(submodel)
 obj_store.add(aas)
 
-
 #################################################################
 # Step 3: Retrieving Objects From the Store by Their Identifier #
 #################################################################
@@ -82,13 +79,13 @@ tmp_submodel = obj_store.get_identifiable("https://acplt.org/Simple_Submodel")
 
 assert submodel is tmp_submodel
 
-
 ########################################################
 # Step 4: Using the ObjectStore to Resolve a Reference #
 ########################################################
 
 # The `aas` object already contains a reference to the submodel.
-# Let's create a list of all submodels, to which the AAS has references, by resolving each of the submodel references:
+# Let's create a list of all submodels, to which the AAS has references,
+# by resolving each of the submodel references:
 submodels = [reference.resolve(obj_store) for reference in aas.submodel]
 
 # The first (and only) element of this list should be our example submodel:

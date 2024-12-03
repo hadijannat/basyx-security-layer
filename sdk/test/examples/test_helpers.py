@@ -11,6 +11,7 @@ from basyx.aas.examples.data._helper import AASDataChecker, DataChecker
 
 
 class DataCheckerTest(unittest.TestCase):
+
     def test_check(self):
         checker = DataChecker(raise_immediately=True)
         with self.assertRaises(AssertionError) as cm:
@@ -42,6 +43,7 @@ class DataCheckerTest(unittest.TestCase):
 
 
 class AASDataCheckerTest(unittest.TestCase):
+
     def test_qualifiable_checker(self):
         qualifier_expected = model.Qualifier(
             type_="test", value_type=model.datatypes.String, value="test value"
@@ -240,7 +242,9 @@ class AASDataCheckerTest(unittest.TestCase):
         self.assertEqual(0, sum(1 for _ in checker.failed_checks))
 
     def test_not_implemented(self):
+
         class DummySubmodelElement(model.SubmodelElement):
+
             def __init__(self, id_short: model.NameType):
                 super().__init__(id_short)
 

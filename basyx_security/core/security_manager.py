@@ -71,7 +71,10 @@ class SecurityManager:
                 resource_id=resource_id,
                 action="set_role_permissions",
                 status="success",
-                details={"role": role, "access": access.name},
+                details={
+                    "role": role,
+                    "access": access.name
+                },
             )
         )
 

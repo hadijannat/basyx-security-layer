@@ -49,16 +49,14 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-
 # Some basic data for couchdb setup
 default_headers = {
     "Accept": "application/json",
 }
 if args.admin_user is not None:
     default_headers["Authorization"] = "Basic %s" % base64.b64encode(
-        ("%s:%s" % (args.admin_user, args.admin_password)).encode("ascii")
+        ("{}:{}".format(args.admin_user, args.admin_password)).encode("ascii")
     ).decode("ascii")
-
 
 # Check if CouchDB server is available
 request = urllib.request.Request(
@@ -86,7 +84,6 @@ except urllib.error.HTTPError as e:
         )
         urllib.request.urlopen(request)
 
-
 # Create the database if not existing
 request = urllib.request.Request(
     "{}/{}".format(TEST_CONFIG["couchdb"]["url"], TEST_CONFIG["couchdb"]["database"]),
@@ -107,7 +104,6 @@ except urllib.error.HTTPError as e:
     else:
         raise
 
-
 # Create the user if not existing
 request = urllib.request.Request(
     "{}/_users/org.couchdb.user:{}".format(
@@ -126,7 +122,6 @@ request = urllib.request.Request(
 )
 # TODO make more failsafe: Set password of user if they exist already
 urllib.request.urlopen(request)
-
 
 # Add user as member of database
 # TODO make more failsafe: Keep existing authorizations

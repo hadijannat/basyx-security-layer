@@ -16,6 +16,7 @@ from basyx.security import (
 
 
 class TestBaSyxSecurity(unittest.TestCase):
+
     def setUp(self):
         """Set up test fixtures"""
         # Create a simple AAS for testing

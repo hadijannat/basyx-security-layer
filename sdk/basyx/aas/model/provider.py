@@ -11,16 +11,7 @@ This module implements Registries for the AAS, in order to enable resolving glob
 """
 
 import abc
-from typing import (
-    Dict,
-    Generic,
-    Iterable,
-    Iterator,
-    List,
-    MutableSet,
-    Optional,
-    TypeVar,
-)
+from typing import Dict, Generic, Iterable, Iterator, List, MutableSet, Optional, TypeVar
 
 from .base import Identifiable, Identifier
 
@@ -112,7 +103,7 @@ class DictObjectStore(AbstractObjectStore[_IT], Generic[_IT]):
     def add(self, x: _IT) -> None:
         if x.id in self._backend and self._backend.get(x.id) is not x:
             raise KeyError(
-                "Identifiable object with same id {} is already stored in this store".format(x.id)
+                f"Identifiable object with same id {x.id} is already stored in this store"
             )
         self._backend[x.id] = x
 

@@ -44,6 +44,7 @@ elif storage_type in "LOCAL_FILE_READ_ONLY":
 
 else:
     print(
-        f"STORAGE_TYPE must be either LOCAL_FILE or LOCAL_FILE_READ_ONLY! Current value: {storage_type}",
+        "STORAGE_TYPE must be either LOCAL_FILE or LOCAL_FILE_READ_ONLY! "
+        f"Current value: {storage_type}",
         file=sys.stderr,
     )

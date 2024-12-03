@@ -62,7 +62,8 @@ def check(
             f"{type_name} must match the pattern '{_unicode_escape(pattern.pattern)}'! "
             f"(value: '{_unicode_escape(value)}')"
         )
-    # Constraint AASd-130: an attribute with data type "string" shall consist of these characters only:
+    # Constraint AASd-130: an attribute with data type "string" shall consist
+    # of these characters only:
     if not AASD130_RE.fullmatch(value):
         # It's easier to implement this as a ValueError, because otherwise AASConstraintViolation would need to be
         # imported from `base` and the ConstrainedLangStringSet would need to except AASConstraintViolation errors
@@ -142,12 +143,15 @@ def create_check_function(
 def constrain_attr(
     pub_attr_name: str, constraint_check_fn: Callable[[str], None]
 ) -> Callable[[Type[_T]], Type[_T]]:
+
     def decorator_fn(decorated_class: Type[_T]) -> Type[_T]:
+
         def _getter(self) -> Optional[str]:
             return getattr(self, "_" + pub_attr_name)
 
         def _setter(self, value: Optional[str]) -> None:
-            # if value is None, skip checks. incorrect 'None' assignments are caught by the type checker anyway
+            # if value is None, skip checks. incorrect 'None' assignments are caught
+            # by the type checker anyway
             if value is not None:
                 constraint_check_fn(value)
             setattr(self, "_" + pub_attr_name, value)

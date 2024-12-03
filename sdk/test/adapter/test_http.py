@@ -4,7 +4,6 @@
 # the LICENSE file of this project.
 #
 # SPDX-License-Identifier: MIT
-
 """
 This test uses the schemathesis package to perform automated stateful testing on the implemented http api. Requests
 are created automatically based on the json schemata given in the api specification, responses are also validated
@@ -58,9 +57,11 @@ def _check_transformed(response, case):
 HYPOTHESIS_SETTINGS = hypothesis.settings(
     max_examples=int(os.getenv("HYPOTHESIS_MAX_EXAMPLES", 10)),
     stateful_step_count=5,
-    # disable the filter_too_much health check, which triggers if a strategy filters too much data, raising an error
+    # disable the filter_too_much health check, which triggers if a strategy
+    # filters too much data, raising an error
     suppress_health_check=[hypothesis.HealthCheck.filter_too_much],
-    # disable data generation deadlines, which would result in an error if data generation takes too much time
+    # disable data generation deadlines, which would result in an error if
+    # data generation takes too much time
     deadline=None,
 )
 
@@ -92,6 +93,7 @@ SUBMODEL_SCHEMA = schemathesis.from_path(
 
 
 class APIWorkflowAAS(AAS_SCHEMA.as_state_machine()):  # type: ignore
+
     def setup(self):
         self.schema.app.object_store = create_full_example()
         # select random identifier for each test scenario
@@ -109,6 +111,7 @@ class APIWorkflowAAS(AAS_SCHEMA.as_state_machine()):  # type: ignore
 
 
 class APIWorkflowSubmodel(SUBMODEL_SCHEMA.as_state_machine()):  # type: ignore
+
     def setup(self):
         self.schema.app.object_store = create_full_example()
         self.schema.base_url = BASE_URL + "/submodels/" + random.choice(tuple(IDENTIFIER_SUBMODEL))

@@ -56,7 +56,7 @@ class UUIDGenerator(AbstractIdentifierGenerator):
     def generate_id(self, proposal: Optional[str] = None) -> model.Identifier:
         uuid_ = uuid.uuid1(clock_seq=self._sequence)
         self._sequence += 1
-        return "urn:uuid:{}".format(uuid_)
+        return f"urn:uuid:{uuid_}"
 
 
 class NamespaceIRIGenerator(AbstractIdentifierGenerator):
@@ -102,8 +102,9 @@ class NamespaceIRIGenerator(AbstractIdentifierGenerator):
                     self._namespace, proposal, "_" if proposal else "", counter
                 )
             else:
-                iri = "{}{}".format(self._namespace, proposal)
-            # Try to find iri in provider. If it does not exist (KeyError), we found a unique one to return
+                iri = f"{self._namespace}{proposal}"
+            # Try to find iri in provider. If it does not exist (KeyError), we found a
+            # unique one to return
             try:
                 self.provider.get_identifiable(iri)
             except KeyError:
@@ -116,7 +117,7 @@ class NamespaceIRIGenerator(AbstractIdentifierGenerator):
 # minus '/', '?', '=', '&', '#', which can be used in a path, querystring and fragment
 # plus not allowed characters (see) https://stackoverflow.com/a/36667242/10315508
 _iri_segment_quote_table_tmpl: Dict[Union[str, int], Optional[str]] = {
-    c: "%{:02X}".format(c.encode()[0])
+    c: f"%{c.encode()[0]:02X}"
     for c in [
         ":",
         "[",

@@ -13,14 +13,14 @@ the :mod:`~basyx.aas.adapter.aasx` module from the Eclipse BaSyx Python SDK.
 import datetime
 from pathlib import Path  # Used for easier handling of auxiliary file's local path
 
-import pyecma376_2  # The base library for Open Packaging Specifications. We will use the OPCCoreProperties class.
+# The base library for Open Packaging Specifications. We will use the OPCCoreProperties class.
+import pyecma376_2
 from basyx.aas import model
 from basyx.aas.adapter import aasx
 
 # step 1: Setting up an SupplementaryFileContainer and AAS & submodel with File objects
 # step 2: Writing AAS objects and auxiliary files to an AASX package
 # step 3: Reading AAS objects and auxiliary files from an AASX package
-
 
 ########################################################################################
 # Step 1: Setting up a SupplementaryFileContainer and AAS & submodel with File objects #
@@ -46,7 +46,6 @@ unrelated_submodel = model.Submodel(id_="https://acplt.org/Unrelated_Submodel")
 # (see `tutorial_backend_couchdb.py`).
 object_store = model.DictObjectStore([submodel, aas, unrelated_submodel])
 
-
 # For holding auxiliary files, which will eventually be added to an AASX package, we need a SupplementaryFileContainer.
 # The `DictSupplementaryFileContainer` is a simple SupplementaryFileContainer that stores the files' contents in simple
 # bytes objects in memory.
@@ -67,14 +66,12 @@ file_store = aasx.DictSupplementaryFileContainer()
 with open(Path(__file__).parent / "data" / "TestFile.pdf", "rb") as f:
     actual_file_name = file_store.add_file("/aasx/suppl/MyExampleFile.pdf", f, "application/pdf")
 
-
 # With the actual_file_name in the SupplementaryFileContainer, we can create a reference to that file in our AAS
 # Submodel, in the form of a `File` object:
 
 submodel.submodel_element.add(
     model.File(id_short="documentationFile", content_type="application/pdf", value=actual_file_name)
 )
-
 
 ######################################################################
 # Step 2: Writing AAS objects and auxiliary files to an AASX package #
@@ -114,7 +111,8 @@ with aasx.AASXWriter("MyAASXPackage.aasx") as writer:
         part_name="/aasx/my_aas_part.xml", objects=objects_to_be_written, file_store=file_store
     )
 
-    # We can also add a thumbnail image to the package (using `writer.write_thumbnail()`) or add metadata:
+    # We can also add a thumbnail image to the package (using
+    # `writer.write_thumbnail()`) or add metadata:
     meta_data = pyecma376_2.OPCCoreProperties()
     meta_data.creator = "Chair of Process Control Engineering"
     meta_data.created = datetime.datetime.now()
@@ -124,13 +122,13 @@ with aasx.AASXWriter("MyAASXPackage.aasx") as writer:
 # close the package file afterward. Make sure, to always call `AASXWriter.close()` or use the AASXWriter in a `with`
 # statement (as a context manager) as shown above.
 
-
 ########################################################################
 # Step 3: Reading AAS objects and auxiliary files from an AASX package #
 ########################################################################
 
 # Let's read the AASX package file, we have just written.
-# We'll use a fresh ObjectStore and SupplementaryFileContainer to read AAS objects and auxiliary files into.
+# We'll use a fresh ObjectStore and SupplementaryFileContainer to read AAS
+# objects and auxiliary files into.
 new_object_store: model.DictObjectStore[model.Identifiable] = model.DictObjectStore()
 new_file_store = aasx.DictSupplementaryFileContainer()
 
@@ -144,7 +142,6 @@ with aasx.AASXReader("MyAASXPackage.aasx") as reader:
     new_meta_data = reader.get_core_properties()
 
     # We could also read the thumbnail image, using `reader.get_thumbnail()`
-
 
 # Some quick checks to make sure, reading worked as expected
 assert "https://acplt.org/Simple_Submodel" in new_object_store

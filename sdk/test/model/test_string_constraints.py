@@ -12,6 +12,7 @@ from basyx.aas.model import _string_constraints
 
 
 class StringConstraintsTest(unittest.TestCase):
+
     def test_identifier(self) -> None:
         identifier: model.Identifier = ""
         with self.assertRaises(ValueError) as cm:
@@ -75,8 +76,10 @@ class StringConstraintsTest(unittest.TestCase):
 
 
 class StringConstraintsDecoratorTest(unittest.TestCase):
+
     @_string_constraints.constrain_path_type("some_attr")
     class DummyClass:
+
         def __init__(self, path: model.PathType):
             self.some_attr: model.PathType = path
 
@@ -113,6 +116,7 @@ class StringConstraintsDecoratorTest(unittest.TestCase):
 
             @_string_constraints.constrain_label_type("bar")
             class DummyClass2:
+
                 @property
                 def bar(self):
                     return "baz"

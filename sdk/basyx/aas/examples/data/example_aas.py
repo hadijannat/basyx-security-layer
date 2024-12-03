@@ -19,7 +19,6 @@ from ._helper import AASDataChecker
 
 logger = logging.getLogger(__name__)
 
-
 _embedded_data_specification_iec61360 = model.EmbeddedDataSpecification(
     data_specification=model.ExternalReference(
         (
@@ -660,7 +659,7 @@ def create_example_submodel() -> model.Submodel:
     submodel_element_blob = model.Blob(
         id_short="ExampleBlob",
         content_type="application/pdf",
-        value=bytes(b"\x01\x02\x03\x04\x05"),
+        value=b"\x01\x02\x03\x04\x05",
         category="PARAMETER",
         description=model.MultiLanguageTextType(
             {"en-US": "Example Blob object", "de": "Beispiel Blob Element"}
@@ -956,6 +955,37 @@ def create_example_submodel() -> model.Submodel:
         extension=(),
         supplemental_semantic_id=(),
         embedded_data_specifications=(),
+    )
+
+    operation_variable_property = model.Property(
+        id_short="ExampleProperty",
+        value_type=model.datatypes.String,
+        value="exampleValue",
+        value_id=model.ExternalReference(
+            (
+                model.Key(
+                    type_=model.KeyTypes.GLOBAL_REFERENCE,
+                    value="http://acplt.org/ValueId/ExampleValueId",
+                ),
+            )
+        ),
+        display_name=model.MultiLanguageNameType(
+            {"en-US": "ExampleProperty", "de": "BeispielProperty"}
+        ),
+        category="CONSTANT",
+        description=model.MultiLanguageTextType(
+            {"en-US": "Example Property object", "de": "Beispiel Property Element"}
+        ),
+        parent=None,
+        semantic_id=model.ExternalReference(
+            (
+                model.Key(
+                    type_=model.KeyTypes.GLOBAL_REFERENCE,
+                    value="http://acplt.org/Properties/ExampleProperty",
+                ),
+            )
+        ),
+        qualifier=(),
     )
 
     submodel_element_operation = model.Operation(

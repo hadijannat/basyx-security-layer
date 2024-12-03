@@ -41,7 +41,6 @@ from .. import _generic
 
 NS_AAS = _generic.XML_NS_AAS
 
-
 # ##############################################################
 # functions to manipulate etree.Elements more effectively
 # ##############################################################
@@ -323,7 +322,9 @@ def extension_to_xml(obj: model.Extension, tag: str = NS_AAS + "extension") -> e
             )
         )
     if obj.value:
-        et_extension.append(_value_to_xml(obj.value, obj.value_type))  # type: ignore # (value_type could be None)
+        et_extension.append(
+            _value_to_xml(obj.value, obj.value_type)
+        )  # type: ignore # (value_type could be None)
     if len(obj.refers_to) > 0:
         refers_to = _generate_element(NS_AAS + "refersTo")
         for reference in obj.refers_to:
@@ -343,7 +344,8 @@ def value_reference_pair_to_xml(
     :return: Serialized :class:`~lxml.etree._Element` object
     """
     et_vrp = _generate_element(tag)
-    # TODO: value_type isn't used at all by _value_to_xml(), thus we can ignore the type here for now
+    # TODO: value_type isn't used at all by _value_to_xml(), thus we can
+    # ignore the type here for now
     et_vrp.append(_generate_element(NS_AAS + "value", text=obj.value))  # type: ignore
     et_vrp.append(reference_to_xml(obj.value_id, NS_AAS + "valueId"))
     return et_vrp

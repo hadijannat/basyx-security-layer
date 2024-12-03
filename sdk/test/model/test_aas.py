@@ -11,6 +11,7 @@ from basyx.aas import model
 
 
 class AssetInformationTest(unittest.TestCase):
+
     def test_aasd_131_init(self) -> None:
         with self.assertRaises(model.AASConstraintViolation) as cm:
             model.AssetInformation(model.AssetKind.INSTANCE)

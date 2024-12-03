@@ -34,6 +34,7 @@ def _root_cause(exception: BaseException) -> BaseException:
 
 
 class XmlDeserializationTest(unittest.TestCase):
+
     def _assertInExceptionAndLog(
         self,
         xml: str,
@@ -374,6 +375,7 @@ class XmlDeserializationTest(unittest.TestCase):
         self.assertIsInstance(submodel, model.Submodel)
 
     def test_no_namespace_prefix(self) -> None:
+
         def xml(id_: str) -> str:
             return f"""
             <environment xmlns="{XML_NS_MAP["aas"]}">
@@ -392,6 +394,7 @@ class XmlDeserializationTest(unittest.TestCase):
 
 
 class XmlDeserializationStrippedObjectsTest(unittest.TestCase):
+
     def test_stripped_qualifiable(self) -> None:
         xml = f"""
         <aas:submodel xmlns:aas="{XML_NS_MAP["aas"]}">
@@ -475,13 +478,17 @@ class XmlDeserializationStrippedObjectsTest(unittest.TestCase):
 
 
 class XmlDeserializationDerivingTest(unittest.TestCase):
+
     def test_submodel_constructor_overriding(self) -> None:
+
         class EnhancedSubmodel(model.Submodel):
+
             def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
                 self.enhanced_attribute = "fancy!"
 
         class EnhancedAASDecoder(StrictAASFromXmlDecoder):
+
             @classmethod
             def construct_submodel(
                 cls, element: etree._Element, object_class=EnhancedSubmodel, **kwargs
@@ -504,6 +511,7 @@ class XmlDeserializationDerivingTest(unittest.TestCase):
 
 
 class TestTagReplaceNamespace(unittest.TestCase):
+
     def test_known_namespace(self):
         tag = "{https://admin-shell.io/aas/3/0}tag"
         expected = "aas:tag"

@@ -28,13 +28,13 @@ import basyx.aas.examples.data.example_aas
 #      "type": "user"}
 #
 # Afterwards you can add the new user to the set of "Members" of your new database (via the "Permissions" section in the
-# user interface). Alternatively, you can use the admin credentials with the BaSyx Python SDK (see below).
+# user interface). Alternatively, you can use the admin credentials with
+# the BaSyx Python SDK (see below).
 
 # Step-by-Step Guide:
 # step 1: connecting to a CouchDB server
 # step 2: storing objects in CouchDBObjectStore
 # step 3: updating objects from the CouchDB and committing changes
-
 
 ##########################################
 # Step 1: Connecting to a CouchDB Server #
@@ -60,15 +60,14 @@ couchdb_database = config["couchdb"]["database"]
 couchdb_user = config["couchdb"]["user"]
 couchdb_password = config["couchdb"]["password"]
 
-
 # Provide the login credentials to the CouchDB backend.
 # These credentials are used whenever communication with this CouchDB server is required either via the
 # CouchDBObjectStore or via the update()/commit() backend.
 basyx.aas.backend.couchdb.register_credentials(couchdb_url, couchdb_user, couchdb_password)
 
-# Now, we create a CouchDBObjectStore as an interface for managing the objects in the CouchDB server.
+# Now, we create a CouchDBObjectStore as an interface for managing the
+# objects in the CouchDB server.
 object_store = basyx.aas.backend.couchdb.CouchDBObjectStore(couchdb_url, couchdb_database)
-
 
 #####################################################
 # Step 2: Storing objects in the CouchDBObjectStore #
@@ -85,7 +84,6 @@ example_submodel2 = basyx.aas.examples.data.example_aas.create_example_bill_of_m
 # commit() will work automatically (see below).
 object_store.add(example_submodel1)
 object_store.add(example_submodel2)
-
 
 ####################################################################
 # Step 3: Updating Objects from the CouchDB and Committing Changes #
@@ -111,7 +109,6 @@ prop.value = "RWTH Aachen"
 # as the source attribute of all ancestors in the object hierarchy (including the Submodel) and commit the changes to
 # all of these external data sources.
 prop.commit()
-
 
 ############
 # Clean up #

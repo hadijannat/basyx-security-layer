@@ -13,6 +13,7 @@ from basyx.aas.model import Referable
 
 
 class ExampleBackend(backends.Backend):
+
     @classmethod
     def commit_object(
         cls, committed_object: Referable, store_object: Referable, relative_path: List[str]
@@ -27,6 +28,7 @@ class ExampleBackend(backends.Backend):
 
 
 class BackendsTest(unittest.TestCase):
+
     def test_backend_store(self):
         backends.register_backend("mockScheme", ExampleBackend)
         self.assertIs(backends.get_backend("mockScheme:x-test:test_backend"), ExampleBackend)

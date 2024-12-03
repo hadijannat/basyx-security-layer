@@ -1,12 +1,7 @@
 """
-BaSyx Security Module
+.. _security:
 
-This module provides security features for the BaSyx Python SDK, including:
-- Role-Based Access Control (RBAC)
-- Security Levels
-- Access Rights Management
-- JWT-based Authentication
-- Secure AAS Wrappers
+This package contains functionality for securing BaSyx Python SDK objects.
 """
 
 from .aas_wrapper import SecureAAS, SecureElement, SecureSubmodel
@@ -19,4 +14,14 @@ from .core import (
     create_security_context,
 )
 
-__version__ = "0.1.0"
+__all__ = [
+    "SecureAAS",
+    "SecureElement",
+    "SecureSubmodel",
+    "AccessRight",
+    "SecurityContext",
+    "SecurityLevel",
+    "SecurityManager",
+    "SecurityViolation",
+    "create_security_context",
+]

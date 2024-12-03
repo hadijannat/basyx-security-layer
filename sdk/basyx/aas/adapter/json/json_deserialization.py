@@ -1,7 +1,7 @@
 # Copyright (c) 2023 the Eclipse BaSyx Authors
 #
-# This program and the accompanying materials are made available under the terms of the MIT License, available in
-# the LICENSE file of this project.
+# This program and the accompanying materials are made available under the terms of the MIT License,
+# available in the LICENSE file of this project.
 #
 # SPDX-License-Identifier: MIT
 """
@@ -9,23 +9,33 @@
 
 Module for deserializing Asset Administration Shell data from the official JSON format
 
-The module provides custom JSONDecoder classes :class:`~.AASFromJsonDecoder` and :class:`~.StrictAASFromJsonDecoder` to
-be used with the Python standard :mod:`json` module.
+The module provides custom JSONDecoder classes :class:`~.AASFromJsonDecoder` and
+:class:`~.StrictAASFromJsonDecoder` to be used with the Python standard :mod:`json` module.
 
-Furthermore, it provides two classes :class:`~basyx.aas.adapter.json.json_deserialization.StrippedAASFromJsonDecoder`
-and :class:`~basyx.aas.adapter.json.json_deserialization.StrictStrippedAASFromJsonDecoder` for parsing stripped
-JSON objects, which are used in the http adapter (see https://git.rwth-aachen.de/acplt/pyi40aas/-/issues/91).
-The classes contain a custom :meth:`~basyx.aas.adapter.json.json_deserialization.AASFromJsonDecoder.object_hook`
-function to detect encoded AAS objects within the JSON data and convert them to BaSyx Python SDK objects while parsing.
-Additionally, there's the :meth:`~basyx.aas.adapter.json.json_deserialization.read_aas_json_file_into` function, that
-takes a complete AAS JSON file, reads its contents and stores the objects in the provided
-:class:`~basyx.aas.model.provider.AbstractObjectStore`. :meth:`read_aas_json_file` is a wrapper for this function.
-Instead of storing the objects in a given :class:`~basyx.aas.model.provider.AbstractObjectStore`,
-it returns a :class:`~basyx.aas.model.provider.DictObjectStore` containing parsed objects.
+Furthermore, it provides two classes
+:class:`~basyx.aas.adapter.json.json_deserialization.StrippedAASFromJsonDecoder` and
+:class:`~basyx.aas.adapter.json.json_deserialization.StrictStrippedAASFromJsonDecoder` for parsing
+stripped JSON objects, which are used in the http adapter
+(see https://git.rwth-aachen.de/acplt/pyi40aas/-/issues/91).
 
-The deserialization is performed in a bottom-up approach: The ``object_hook()`` method gets called for every parsed JSON
-object (as dict) and checks for existence of the ``modelType`` attribute. If it is present, the ``AAS_CLASS_PARSERS``
-dict defines, which of the constructor methods of the class is to be used for converting the dict into an object.
+The classes contain a custom
+:meth:`~basyx.aas.adapter.json.json_deserialization.AASFromJsonDecoder.object_hook` function to detect
+encoded AAS objects within the JSON data and convert them to BaSyx Python SDK objects while parsing.
+
+Additionally, there's the
+:meth:`~basyx.aas.adapter.json.json_deserialization.read_aas_json_file_into` function, that takes a
+complete AAS JSON file, reads its contents and stores the objects in the provided
+:class:`~basyx.aas.model.provider.AbstractObjectStore`.
+
+:meth:`read_aas_json_file` is a wrapper for this function. Instead of storing the objects in a given
+:class:`~basyx.aas.model.provider.AbstractObjectStore`, it returns a
+:class:`~basyx.aas.model.provider.DictObjectStore` containing parsed objects.
+
+The deserialization is performed in a bottom-up approach: The ``object_hook()`` method gets called for
+every parsed JSON object (as dict) and checks for existence of the ``modelType`` attribute. If it is
+present, the ``AAS_CLASS_PARSERS`` dict defines, which of the constructor methods of the class is to be
+used for converting the dict into an object.
+
 Embedded objects that should have a ``modelType`` themselves are expected to be converted already.
 Other embedded objects are converted using a number of helper constructor methods.
 """
@@ -34,18 +44,7 @@ import contextlib
 import json
 import logging
 import pprint
-from typing import (
-    IO,
-    Callable,
-    ContextManager,
-    Dict,
-    List,
-    Optional,
-    Set,
-    Type,
-    TypeVar,
-    get_args,
-)
+from typing import IO, Callable, ContextManager, Dict, List, Optional, Set, Type, TypeVar, get_args
 
 from basyx.aas import model
 
@@ -67,7 +66,6 @@ from .._generic import (
 
 logger = logging.getLogger(__name__)
 
-
 # #############################################################################
 # Helper functions (for simplifying implementation of constructor functions)
 # #############################################################################
@@ -80,7 +78,8 @@ def _get_ts(dct: Dict[str, object], key: str, type_: Type[T]) -> T:
     """
     Helper function for getting an item from a (str→object) dict in a typesafe way.
 
-    The type of the object is checked at runtime and a TypeError is raised, if the object has not the expected type.
+    The type of the object is checked at runtime and a TypeError is raised, if the object has not the
+    expected type.
 
     :param dct: The dict
     :param key: The key of the item to retrieve
@@ -91,7 +90,7 @@ def _get_ts(dct: Dict[str, object], key: str, type_: Type[T]) -> T:
     """
     val = dct[key]
     if not isinstance(val, type_):
-        raise TypeError("Dict entry '{}' has unexpected type {}".format(key, type(val).__name__))
+        raise TypeError(f"Dict entry '{key}' has unexpected type {type(val).__name__}")
     return val
 
 
@@ -99,18 +98,19 @@ def _expect_type(object_: object, type_: Type, context: str, failsafe: bool) -> 
     """
     Helper function to check type of an embedded object.
 
-    This function may be used in any constructor function for an AAS object that expects to find already constructed
-    AAS objects of a certain type within its data dict. In this case, we want to ensure that the object has this kind
-    and raise a TypeError if not. In failsafe mode, we want to log the error and prevent the object from being added
-    to the parent object. A typical use of this function would look like this:
+    This function may be used in any constructor function for an AAS object that expects to find already
+    constructed AAS objects of a certain type within its data dict. In this case, we want to ensure that
+    the object has this kind and raise a TypeError if not. In failsafe mode, we want to log the error
+    and prevent the object from being added to the parent object. A typical use of this function would
+    look like this:
 
       if _expect_type(element, model.SubmodelElement, str(submodel), failsafe):
           submodel.submodel_element.add(element)
 
     :param object_: The object to be type-checked
     :param type_: The expected type
-    :param context: A string to add to the exception message / log message, that describes the context in that the
-                    object has been found
+    :param context: A string to add to the exception message / log message, that describes the context
+                   in that the object has been found
     :param failsafe: Log error and return false instead of raising a TypeError
     :return: True if the object is of the expected type
     :raises TypeError: If the object is not of the expected type and the failsafe mode is not active
@@ -121,18 +121,18 @@ def _expect_type(object_: object, type_: Type, context: str, failsafe: bool) -> 
         logger.error("Expected a %s in %s, but found %s", type_.__name__, context, repr(object_))
     else:
         raise TypeError(
-            "Expected a %s in %s, but found %s" % (type_.__name__, context, repr(object_))
+            "Expected a {} in {}, but found {}".format(type_.__name__, context, repr(object_))
         )
     return False
 
 
 class AASFromJsonDecoder(json.JSONDecoder):
     """
-    Custom JSONDecoder class to use the :mod:`json` module for deserializing Asset Administration Shell data from the
-    official JSON format
+    Custom JSONDecoder class to use the :mod:`json` module for deserializing Asset Administration Shell
+    data from the official JSON format
 
-    The class contains a custom :meth:`~.AASFromJsonDecoder.object_hook` function to detect encoded AAS objects within
-    the JSON data and convert them to BaSyx Python SDK objects while parsing.
+    The class contains a custom :meth:`~.AASFromJsonDecoder.object_hook` function to detect encoded AAS
+    objects within the JSON data and convert them to BaSyx Python SDK objects while parsing.
 
     Typical usage:
 
@@ -140,20 +140,19 @@ class AASFromJsonDecoder(json.JSONDecoder):
 
         data = json.loads(json_string, cls=AASFromJsonDecoder)
 
-    The ``object_hook`` function uses a set of ``_construct_*()`` methods, one for each
-    AAS object type to transform the JSON objects in to BaSyx Python SDK objects. These constructor methods are divided
-    into two parts: "Helper Constructor Methods", that are used to construct AAS object types without a ``modelType``
-    attribute as embedded objects within other AAS objects, and "Direct Constructor Methods" for AAS object types *with*
-    ``modelType`` attribute. The former are called from other constructor methods or utility methods based on the
-    expected type of an attribute, the latter are called directly from the ``object_hook()`` function based on the
-    ``modelType`` attribute.
+    The ``object_hook`` function uses a set of ``_construct_*()`` methods, one for each AAS object type
+    to transform the JSON objects in to BaSyx Python SDK objects. These constructor methods are divided
+    into two parts: "Helper Constructor Methods", that are used to construct AAS object types without a
+    ``modelType`` attribute as embedded objects within other AAS objects, and "Direct Constructor
+    Methods" for AAS object types *with* ``modelType`` attribute. The former are called from other
+    constructor methods or utility methods based on the expected type of an attribute, the latter are
+    called directly from the ``object_hook()`` function based on the ``modelType`` attribute.
 
-    This class may be subclassed to override some of the constructor functions, e.g. to construct objects of specialized
-    subclasses of the BaSyx Python SDK object classes instead of these normal classes from the ``model`` package. To
-    simplify this tasks, (nearly) all the constructor methods take a parameter ``object_type`` defaulting to the normal
-    BaSyx Python SDK object class, that can be overridden in a derived function:
-
-    .. code-block:: python
+    This class may be subclassed to override some of the constructor functions, e.g. to construct
+    objects of specialized subclasses of the BaSyx Python SDK object classes instead of these normal
+    classes from the ``model`` package. To simplify this tasks, (nearly) all the constructor methods
+    take a parameter ``object_type`` defaulting to the normal BaSyx Python SDK object class, that can
+    be overridden in a derived function:
 
     .. code-block:: python
 
@@ -166,12 +165,12 @@ class AASFromJsonDecoder(json.JSONDecoder):
                 return super()._construct_submodel(dct, object_class=object_class)
 
 
-    :cvar failsafe: If ``True`` (the default), don't raise Exceptions for missing attributes and wrong types, but
-                    instead skip defective objects and use logger to output warnings. Use StrictAASFromJsonDecoder for a
-                    non-failsafe version.
-    :cvar stripped: If ``True``, the JSON objects will be parsed in a stripped manner, excluding some attributes.
-                    Defaults to ``False``.
-                    See https://git.rwth-aachen.de/acplt/pyi40aas/-/issues/91
+    :cvar failsafe: If ``True`` (the default), don't raise Exceptions for missing attributes and wrong
+                   types, but instead skip defective objects and use logger to output warnings. Use
+                   StrictAASFromJsonDecoder for a non-failsafe version.
+    :cvar stripped: If ``True``, the JSON objects will be parsed in a stripped manner, excluding some
+                   attributes. Defaults to ``False``.
+                   See https://git.rwth-aachen.de/acplt/pyi40aas/-/issues/91
     """
 
     failsafe = True
@@ -182,17 +181,19 @@ class AASFromJsonDecoder(json.JSONDecoder):
 
     @classmethod
     def object_hook(cls, dct: Dict[str, object]) -> object:
-        # Check if JSON object seems to be a deserializable AAS object (i.e. it has a modelType). Otherwise, the JSON
-        #   object is returned as is, so it's possible to mix AAS objects with other data within a JSON structure.
+        # Check if JSON object seems to be a deserializable AAS object (i.e. it has a modelType).
+        # Otherwise, the JSON object is returned as is, so it's possible to mix AAS objects with other
+        # data within a JSON structure.
         if "modelType" not in dct:
             return dct
 
-        # The following dict specifies a constructor method for all AAS classes that may be identified using the
-        # ``modelType`` attribute in their JSON representation. Each of those constructor functions takes the JSON
-        # representation of an object and tries to construct a Python object from it. Embedded objects that have a
-        # modelType themselves are expected to be converted to the correct PythonType already. Additionally, each
-        # function takes a bool parameter ``failsafe``, which indicates weather to log errors and skip defective objects
-        # instead of raising an Exception.
+        # The following dict specifies a constructor method for all AAS classes that may be identified
+        # using the ``modelType`` attribute in their JSON representation. Each of those constructor
+        # functions takes the JSON representation of an object and tries to construct a Python object
+        # from it. Embedded objects that have a modelType themselves are expected to be converted to
+        # the correct PythonType already. Additionally, each function takes a bool parameter
+        # ``failsafe``, which indicates weather to log errors and skip defective objects instead of
+        # raising an Exception.
         AAS_CLASS_PARSERS: Dict[str, Callable[[Dict[str, object]], object]] = {
             "AssetAdministrationShell": cls._construct_asset_administration_shell,
             "AssetInformation": cls._construct_asset_information,
@@ -220,9 +221,9 @@ class AASFromJsonDecoder(json.JSONDecoder):
         # Get modelType and constructor function
         if not isinstance(dct["modelType"], str):
             logger.warning("JSON object has unexpected format of modelType: %s", dct["modelType"])
-            # Even in strict mode, we consider 'modelType' attributes of wrong type as non-AAS objects instead of
-            #   raising an exception. However, the object's type will probably checked later by read_json_aas_file() or
-            #   _expect_type()
+            # Even in strict mode, we consider 'modelType' attributes of wrong type as non-AAS objects
+            # instead of raising an exception. However, the object's type will probably checked later
+            # by read_json_aas_file() or _expect_type()
             return dct
         model_type = dct["modelType"]
         if model_type not in AAS_CLASS_PARSERS:
@@ -236,7 +237,8 @@ class AASFromJsonDecoder(json.JSONDecoder):
             )
             return dct
 
-        # Use constructor function to transform JSON representation into BaSyx Python SDK model object
+        # Use constructor function to transform JSON representation into BaSyx
+        # Python SDK model object
         try:
             return AAS_CLASS_PARSERS[model_type](dct)
         except (KeyError, TypeError, model.AASConstraintViolation) as e:
@@ -245,14 +247,11 @@ class AASFromJsonDecoder(json.JSONDecoder):
             )
             if cls.failsafe:
                 logger.error(error_message, exc_info=e)
-                # In failsafe mode, we return the raw JSON object dict, if there were errors while parsing an object, so
-                #   a client application is able to handle this data. The read_json_aas_file() function and all
-                #   constructors for complex objects will skip those items by using _expect_type().
+                # In failsafe mode, we return the raw JSON object dict, if there were errors while
+                # parsing an object, so a client application is able to handle this data. The
+                # read_json_aas_file() function and all
                 return dct
-            else:
-                raise (type(e) if isinstance(e, (KeyError, TypeError)) else TypeError)(
-                    error_message
-                ) from e
+            raise TypeError(error_message) from e
 
     # ##################################################################################################
     # Utility Methods used in constructor methods to add general attributes (from abstract base classes)
@@ -350,7 +349,8 @@ class AASFromJsonDecoder(json.JSONDecoder):
     def _construct_specific_asset_id(
         cls, dct: Dict[str, object], object_class=model.SpecificAssetId
     ) -> model.SpecificAssetId:
-        # semantic_id can't be applied by _amend_abstract_attributes because specificAssetId is immutable
+        # semantic_id can't be applied by _amend_abstract_attributes because
+        # specificAssetId is immutable
         return object_class(
             name=_get_ts(dct, "name", str),
             value=_get_ts(dct, "value", str),
@@ -1006,7 +1006,7 @@ def read_aas_json_file_into(
     cm: ContextManager[IO]
     if isinstance(file, get_args(Path)):
         # 'file' is a path, needs to be opened first
-        cm = open(file, "r", encoding="utf-8-sig")
+        cm = open(file, encoding="utf-8-sig")
     else:
         # 'file' is not a path, thus it must already be IO
         # mypy seems to have issues narrowing the type due to get_args()

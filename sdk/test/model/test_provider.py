@@ -11,6 +11,7 @@ from basyx.aas import model
 
 
 class ProvidersTest(unittest.TestCase):
+
     def setUp(self) -> None:
         self.aas1 = model.AssetAdministrationShell(
             model.AssetInformation(global_asset_id="http://acplt.org/TestAsset1/"),

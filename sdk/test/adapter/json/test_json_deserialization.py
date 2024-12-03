@@ -27,6 +27,7 @@ from basyx.aas.adapter.json import (
 
 
 class JsonDeserializationTest(unittest.TestCase):
+
     def test_file_format_wrong_list(self) -> None:
         data = """
             {
@@ -86,7 +87,8 @@ class JsonDeserializationTest(unittest.TestCase):
         with self.assertRaisesRegex(KeyError, r"id"):
             json.loads(data, cls=StrictAASFromJsonDecoder)
 
-        # In failsafe mode, we should get a log entry and the first Submodel entry should be returned as untouched dict
+        # In failsafe mode, we should get a log entry and the first Submodel entry
+        # should be returned as untouched dict
         with self.assertLogs(logging.getLogger(), level=logging.WARNING) as cm:
             parsed_data = json.loads(data, cls=AASFromJsonDecoder)
         self.assertIn("id", cm.output[0])  # type: ignore
@@ -225,13 +227,17 @@ class JsonDeserializationTest(unittest.TestCase):
 
 
 class JsonDeserializationDerivingTest(unittest.TestCase):
+
     def test_asset_constructor_overriding(self) -> None:
+
         class EnhancedSubmodel(model.Submodel):
+
             def __init__(self, **kwargs):
                 super().__init__(**kwargs)
                 self.enhanced_attribute = "fancy!"
 
         class EnhancedAASDecoder(StrictAASFromJsonDecoder):
+
             @classmethod
             def _construct_submodel(cls, dct, object_class=EnhancedSubmodel):
                 return super()._construct_submodel(dct, object_class=object_class)
@@ -250,6 +256,7 @@ class JsonDeserializationDerivingTest(unittest.TestCase):
 
 
 class JsonDeserializationStrippedObjectsTest(unittest.TestCase):
+
     def test_stripped_qualifiable(self) -> None:
         data = """
             {

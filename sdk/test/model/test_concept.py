@@ -11,6 +11,7 @@ from basyx.aas.examples.data import example_aas
 
 
 class ConceptDescriptionTest(unittest.TestCase):
+
     def test_concept_description(self):
         concept_description = example_aas.create_example_concept_description()
 

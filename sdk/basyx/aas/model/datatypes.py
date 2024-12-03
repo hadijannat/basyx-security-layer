@@ -51,7 +51,9 @@ class Date(datetime.date):
         day: Optional[int] = None,
         tzinfo: Optional[datetime.tzinfo] = None,
     ) -> "Date":
-        res: "Date" = datetime.date.__new__(cls, year, month, day)  # type: ignore  # pickle support is not in typeshed
+        res: "Date" = datetime.date.__new__(
+            cls, year, month, day
+        )  # type: ignore  # pickle support is not in typeshed
         # TODO normalize tzinfo to '+12:00' through '-11:59'
         res._tzinfo = tzinfo  # type: ignore  # Workaround for MyPy bug, not recognizing our additional __slots__
         return res
@@ -73,7 +75,7 @@ class Date(datetime.date):
 
     def __repr__(self):
         if self.tzinfo is not None:
-            return super().__repr__()[:-1] + ", tzinfo={})".format(self.tzinfo)
+            return super().__repr__()[:-1] + f", tzinfo={self.tzinfo})"
         else:
             return super().__repr__()
 
@@ -105,7 +107,7 @@ class GYearMonth:
     def __init__(self, year: int, month: int, tzinfo: Optional[datetime.tzinfo] = None):
         # TODO normalize tzinfo to '+12:00' through '-11:59'
         if not 1 <= month <= 12:
-            raise ValueError("{} is out of the allowed range for month".format(month))
+            raise ValueError(f"{month} is out of the allowed range for month")
         self.year: int = year
         self.month: int = month
         self.tzinfo: Optional[datetime.tzinfo] = tzinfo
@@ -158,9 +160,9 @@ class GMonthDay:
     def __init__(self, month: int, day: int, tzinfo: Optional[datetime.tzinfo] = None):
         # TODO normalize tzinfo to '+12:00' through '-11:59'
         if not 1 <= day <= 31:
-            raise ValueError("{} is out of the allowed range for day of month".format(day))
+            raise ValueError(f"{day} is out of the allowed range for day of month")
         if not 1 <= month <= 12:
-            raise ValueError("{} is out of the allowed range for month".format(month))
+            raise ValueError(f"{month} is out of the allowed range for month")
         self.month: int = month
         self.day: int = day
         self.tzinfo: Optional[datetime.tzinfo] = tzinfo
@@ -188,7 +190,7 @@ class GDay:
     def __init__(self, day: int, tzinfo: Optional[datetime.tzinfo] = None):
         # TODO normalize tzinfo to '+12:00' through '-11:59'
         if not 1 <= day <= 31:
-            raise ValueError("{} is out of the allowed range for day of month".format(day))
+            raise ValueError(f"{day} is out of the allowed range for day of month")
         self.day: int = day
         self.tzinfo: Optional[datetime.tzinfo] = tzinfo
 
@@ -215,7 +217,7 @@ class GMonth:
     def __init__(self, month: int, tzinfo: Optional[datetime.tzinfo] = None):
         # TODO normalize tzinfo to '+12:00' through '-11:59'
         if not 1 <= month <= 12:
-            raise ValueError("{} is out of the allowed range for month".format(month))
+            raise ValueError(f"{month} is out of the allowed range for month")
         self.month: int = month
         self.tzinfo: Optional[datetime.tzinfo] = tzinfo
 
@@ -251,102 +253,114 @@ class Float(float):
 
 
 class Long(int):
+
     def __new__(cls, *args, **kwargs):
         res = int.__new__(cls, *args, **kwargs)
         # [-9223372036854775808, 9223372036854775807]
         if res > 2**63 - 1 or res < -(2**63):
-            raise ValueError("{} is out of the allowed range for type {}".format(res, cls.__name__))
+            raise ValueError(f"{res} is out of the allowed range for type {cls.__name__}")
         return res
 
 
 class Int(int):
+
     def __new__(cls, *args, **kwargs):
         res = int.__new__(cls, *args, **kwargs)
         # [-2147483648, 2147483647]
         if res > 2**31 - 1 or res < -(2**31):
-            raise ValueError("{} is out of the allowed range for type {}".format(res, cls.__name__))
+            raise ValueError(f"{res} is out of the allowed range for type {cls.__name__}")
         return res
 
 
 class Short(int):
+
     def __new__(cls, *args, **kwargs):
         res = int.__new__(cls, *args, **kwargs)
         # [-32768, 32767]
         if res > 2**15 - 1 or res < -(2**15):
-            raise ValueError("{} is out of the allowed range for type {}".format(res, cls.__name__))
+            raise ValueError(f"{res} is out of the allowed range for type {cls.__name__}")
         return res
 
 
 class Byte(int):
+
     def __new__(cls, *args, **kwargs):
         res = int.__new__(cls, *args, **kwargs)
         # [-128,127]
         if res > 2**7 - 1 or res < -(2**7):
-            raise ValueError("{} is out of the allowed range for type {}".format(res, cls.__name__))
+            raise ValueError(f"{res} is out of the allowed range for type {cls.__name__}")
         return res
 
 
 class NonPositiveInteger(int):
+
     def __new__(cls, *args, **kwargs):
         res = int.__new__(cls, *args, **kwargs)
         if res > 0:
-            raise ValueError("{} is out of the allowed range for type {}".format(res, cls.__name__))
+            raise ValueError(f"{res} is out of the allowed range for type {cls.__name__}")
         return res
 
 
 class NegativeInteger(int):
+
     def __new__(cls, *args, **kwargs):
         res = int.__new__(cls, *args, **kwargs)
         if res >= 0:
-            raise ValueError("{} is out of the allowed range for type {}".format(res, cls.__name__))
+            raise ValueError(f"{res} is out of the allowed range for type {cls.__name__}")
         return res
 
 
 class NonNegativeInteger(int):
+
     def __new__(cls, *args, **kwargs):
         res = int.__new__(cls, *args, **kwargs)
         if res < 0:
-            raise ValueError("{} is out of the allowed range for type {}".format(res, cls.__name__))
+            raise ValueError(f"{res} is out of the allowed range for type {cls.__name__}")
         return res
 
 
 class PositiveInteger(int):
+
     def __new__(cls, *args, **kwargs):
         res = int.__new__(cls, *args, **kwargs)
         if res <= 0:
-            raise ValueError("{} is out of the allowed range for type {}".format(res, cls.__name__))
+            raise ValueError(f"{res} is out of the allowed range for type {cls.__name__}")
         return res
 
 
 class UnsignedLong(int):
+
     def __new__(cls, *args, **kwargs):
         res = int.__new__(cls, *args, **kwargs)
         if not 0 <= res <= 2**64 - 1:
-            raise ValueError("{} is out of the allowed range for type {}".format(res, cls.__name__))
+            raise ValueError(f"{res} is out of the allowed range for type {cls.__name__}")
         return res
 
 
 class UnsignedInt(int):
+
     def __new__(cls, *args, **kwargs):
         res = int.__new__(cls, *args, **kwargs)
         if not 0 <= res <= 2**32 - 1:
-            raise ValueError("{} is out of the allowed range for type {}".format(res, cls.__name__))
+            raise ValueError(f"{res} is out of the allowed range for type {cls.__name__}")
         return res
 
 
 class UnsignedShort(int):
+
     def __new__(cls, *args, **kwargs):
         res = int.__new__(cls, *args, **kwargs)
         if not 0 <= res <= 2**16 - 1:
-            raise ValueError("{} is out of the allowed range for type {}".format(res, cls.__name__))
+            raise ValueError(f"{res} is out of the allowed range for type {cls.__name__}")
         return res
 
 
 class UnsignedByte(int):
+
     def __new__(cls, *args, **kwargs):
         res = int.__new__(cls, *args, **kwargs)
         if not 0 <= res <= 2**8 - 1:
-            raise ValueError("{} is out of the allowed range for type {}".format(res, cls.__name__))
+            raise ValueError(f"{res} is out of the allowed range for type {cls.__name__}")
         return res
 
 
@@ -356,6 +370,7 @@ class AnyURI(str):
 
 
 class NormalizedString(str):
+
     def __new__(cls, *args, **kwargs):
         res = str.__new__(cls, *args, **kwargs)
         if ("\r" in res) or ("\n" in res) or ("\t" in res):
@@ -403,7 +418,6 @@ AnyXSDType = Union[
     String,
     NormalizedString,
 ]
-
 
 XSD_TYPE_NAMES: Dict[Type[AnyXSDType], str] = {
     k: "xs:" + v
@@ -472,7 +486,7 @@ def trivial_cast(
         return type_(value)  # type: ignore
     if isinstance(value, datetime.date) and issubclass(type_, Date):
         return Date(value.year, value.month, value.day)
-    raise TypeError("{} cannot be trivially casted into {}".format(repr(value), type_.__name__))
+    raise TypeError(f"{repr(value)} cannot be trivially casted into {type_.__name__}")
 
 
 def xsd_repr(value: AnyXSDType) -> str:
@@ -491,15 +505,15 @@ def xsd_repr(value: AnyXSDType) -> str:
     elif isinstance(value, Date):
         return value.isoformat() + _serialize_date_tzinfo(value)
     elif isinstance(value, GYearMonth):
-        return "{:02d}-{:02d}".format(value.year, value.month) + _serialize_date_tzinfo(value)
+        return f"{value.year:02d}-{value.month:02d}" + _serialize_date_tzinfo(value)
     elif isinstance(value, GYear):
-        return "{:04d}".format(value.year) + _serialize_date_tzinfo(value)
+        return f"{value.year:04d}" + _serialize_date_tzinfo(value)
     elif isinstance(value, GMonthDay):
-        return "--{:02d}-{:02d}".format(value.month, value.day) + _serialize_date_tzinfo(value)
+        return f"--{value.month:02d}-{value.day:02d}" + _serialize_date_tzinfo(value)
     elif isinstance(value, GDay):
-        return "---{:02d}".format(value.day) + _serialize_date_tzinfo(value)
+        return f"---{value.day:02d}" + _serialize_date_tzinfo(value)
     elif isinstance(value, GMonth):
-        return "--{:02d}".format(value.month) + _serialize_date_tzinfo(value)
+        return f"--{value.month:02d}" + _serialize_date_tzinfo(value)
     elif isinstance(value, Boolean):
         return "true" if value else "false"
     elif isinstance(value, Base64Binary):
@@ -534,7 +548,7 @@ def _serialize_date_tzinfo(date: Union[Date, GYear, GMonth, GDay, GYearMonth, GM
 
 def _serialize_duration(value: Duration) -> str:
     value = value.normalized()
-    signs = set(
+    signs = {
         val < 0
         for val in (
             value.years,
@@ -546,7 +560,7 @@ def _serialize_duration(value: Duration) -> str:
             value.microseconds,
         )
         if val != 0
-    )
+    }
     if len(signs) > 1:
         raise ValueError("Relative Durations with mixed signs are not allowed according to XSD.")
     elif len(signs) == 0:
@@ -555,17 +569,17 @@ def _serialize_duration(value: Duration) -> str:
     result = "-" if signs.pop() else ""
     result += "P"
     if value.years:
-        result += "{:.0f}Y".format(abs(value.years))
+        result += f"{abs(value.years):.0f}Y"
     if value.months:
-        result += "{:.0f}M".format(abs(value.months))
+        result += f"{abs(value.months):.0f}M"
     if value.days:
-        result += "{:.0f}D".format(abs(value.days))
+        result += f"{abs(value.days):.0f}D"
 
     time = ""
     if value.hours:
-        time += "{:.0f}H".format(abs(value.hours))
+        time += f"{abs(value.hours):.0f}H"
     if value.minutes:
-        time += "{:.0f}M".format(abs(value.minutes))
+        time += f"{abs(value.minutes):.0f}M"
     if value.seconds or value.microseconds:
         time += "{:.8g}S".format(
             decimal.Decimal(abs(value.seconds)) + decimal.Decimal(abs(value.microseconds)) / 1000000
@@ -620,7 +634,7 @@ def from_xsd(
         return _parse_xsd_gyearmonth(value)
     elif type_ is GMonthDay:
         return _parse_xsd_gmonthday(value)
-    raise ValueError("{} is not a valid simple built-in XSD type".format(type_.__name__))
+    raise ValueError(f"{type_.__name__} is not a valid simple built-in XSD type")
 
 
 DURATION_RE = re.compile(r"^(-?)P(\d+Y)?(\d+M)?(\d+D)?(T(\d+H)?(\d+M)?((\d+)(\.\d+)?S)?)?$")

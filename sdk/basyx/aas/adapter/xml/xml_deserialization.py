@@ -315,7 +315,9 @@ def _failsafe_construct(
     try:
         return constructor(element, **kwargs)
     except (KeyError, ValueError, model.AASConstraintViolation) as e:
-        error_message = f"Failed to construct {_element_pretty_identifier(element)} using {constructor.__name__}!"
+        error_message = f"Failed to construct {
+            _element_pretty_identifier(element)} using {
+            constructor.__name__}!"
         if not failsafe:
             raise (type(e) if isinstance(e, (KeyError, ValueError)) else ValueError)(
                 error_message
@@ -611,7 +613,9 @@ class AASFromXmlDecoder:
         """
         # TODO: remove the following type: ignore comments when mypy supports abstract types for Type[T]
         # see https://github.com/python/mypy/issues/5374
-        return cls.construct_model_reference_expect_type(element, model.Referable, **kwargs)  # type: ignore
+        return cls.construct_model_reference_expect_type(
+            element, model.Referable, **kwargs
+        )  # type: ignore
 
     @classmethod
     def _construct_operation_variable(
@@ -1216,7 +1220,8 @@ class AASFromXmlDecoder:
     def construct_specific_asset_id(
         cls, element: etree._Element, object_class=model.SpecificAssetId, **_kwargs: Any
     ) -> model.SpecificAssetId:
-        # semantic_id can't be applied by _amend_abstract_attributes because specificAssetId is immutable
+        # semantic_id can't be applied by _amend_abstract_attributes because
+        # specificAssetId is immutable
         return object_class(
             name=_get_text_or_none(element.find(NS_AAS + "name")),
             value=_get_text_or_none(element.find(NS_AAS + "value")),

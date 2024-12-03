@@ -148,12 +148,12 @@ def get_backend(url: str) -> Type[Backend]:
     # TODO handle multiple backends per scheme
     scheme_match = RE_URI_SCHEME.match(url)
     if not scheme_match:
-        raise ValueError("{} is not a valid URL with URI scheme.".format(url))
+        raise ValueError(f"{url} is not a valid URL with URI scheme.")
     scheme = scheme_match[1]
     try:
         return _backends_map[scheme]
     except KeyError as e:
-        raise UnknownBackendException("Could not find Backend for source '{}'".format(url)) from e
+        raise UnknownBackendException(f"Could not find Backend for source '{url}'") from e
 
 
 # #################################################################################################

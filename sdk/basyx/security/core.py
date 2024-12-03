@@ -11,7 +11,7 @@ This module provides the core security functionality including:
 import datetime
 import enum
 import logging
-from typing import Any, Dict, Optional, Set
+from typing import Dict, Optional, Set
 
 import jwt
 
@@ -59,7 +59,10 @@ class SecurityContext:
 
 
 def create_security_context(
-    user_id: str, roles: Set[str], security_level: SecurityLevel, metadata: Optional[Dict] = None
+    user_id: str,
+    roles: Set[str],
+    security_level: SecurityLevel,
+    metadata: Optional[Dict] = None
 ) -> SecurityContext:
     """Create a new security context"""
     return SecurityContext(user_id, roles, security_level, metadata=metadata)
@@ -95,7 +98,8 @@ class SecurityManager:
         required_level = self._security_policies.get(resource_id, SecurityLevel.LOW)
         if context.security_level.value < required_level.value:
             logging.warning(
-                f"Security level violation - User: {context.user_id}, " f"Resource: {resource_id}"
+                f"Security level violation - User: {context.user_id}, "
+                f"Resource: {resource_id}"
             )
             return False
 
@@ -110,16 +114,12 @@ class SecurityManager:
             if required_access == AccessRight.READ and access_right.value >= AccessRight.READ.value:
                 return True
 
-            if (
-                required_access == AccessRight.WRITE
-                and access_right.value >= AccessRight.WRITE.value
-            ):
+            if (required_access == AccessRight.WRITE
+                    and access_right.value >= AccessRight.WRITE.value):
                 return True
 
-            if (
-                required_access == AccessRight.EXECUTE
-                and access_right.value >= AccessRight.EXECUTE.value
-            ):
+            if (required_access == AccessRight.EXECUTE
+                    and access_right.value >= AccessRight.EXECUTE.value):
                 return True
 
         logging.warning(

@@ -17,6 +17,7 @@ from basyx.aas.model import Identifiable, Identifier
 
 
 class KeyTest(unittest.TestCase):
+
     def test_get_identifier(self):
         key1 = model.Key(model.KeyTypes.SUBMODEL, "urn:x-test:submodel1")
         key2 = model.Key(model.KeyTypes.PROPERTY, "prop1")
@@ -59,16 +60,19 @@ class KeyTest(unittest.TestCase):
 
 
 class ExampleReferable(model.Referable):
+
     def __init__(self):
         super().__init__()
 
 
 class ExampleRefereableWithNamespace(model.Referable, model.UniqueIdShortNamespace):
+
     def __init__(self):
         super().__init__()
 
 
 class MockBackend(backends.Backend):
+
     @classmethod
     def update_object(
         cls,
@@ -90,6 +94,7 @@ class MockBackend(backends.Backend):
 
 
 class ExampleIdentifiable(model.Identifiable):
+
     def __init__(self):
         super().__init__()
 
@@ -137,6 +142,7 @@ def generate_example_referable_tree() -> model.Referable:
 
 
 class ReferableTest(unittest.TestCase):
+
     def test_id_short_constraint_aasd_002(self):
         test_object = ExampleReferable()
         test_object.id_short = "Test"
@@ -169,7 +175,9 @@ class ReferableTest(unittest.TestCase):
         )
 
     def test_representation(self):
+
         class DummyClass:
+
             def __init__(self, value: model.Referable):
                 self.value: model.Referable = value
 
@@ -394,6 +402,7 @@ class ReferableTest(unittest.TestCase):
 class ExampleNamespaceReferable(
     model.UniqueIdShortNamespace, model.UniqueSemanticIdNamespace, model.Identifiable
 ):
+
     def __init__(self, values=()):
         super().__init__()
         # The 'id' is required by Referable.__repr__() in error messages.
@@ -405,6 +414,7 @@ class ExampleNamespaceReferable(
 
 
 class ExampleNamespaceQualifier(model.Qualifiable):
+
     def __init__(self, values=()):
         super().__init__()
         self.set1 = model.NamespaceSet(self, [("type", False)], values)
@@ -571,6 +581,7 @@ class ModelNamespaceTest(unittest.TestCase):
             existing_items = []
 
             class DummyNamespace(model.UniqueIdShortNamespace):
+
                 def __init__(
                     self,
                     items: Iterable[T],
@@ -857,6 +868,7 @@ class ModelNamespaceTest(unittest.TestCase):
 class ExampleOrderedNamespace(
     model.UniqueIdShortNamespace, model.UniqueSemanticIdNamespace, model.Identifiable
 ):
+
     def __init__(self, values=()):
         super().__init__()
         # The 'id' is required by Referable.__repr__() in error messages.
@@ -923,6 +935,7 @@ class ModelOrderedNamespaceTest(ModelNamespaceTest):
 
 
 class ExternalReferenceTest(unittest.TestCase):
+
     def test_constraints(self):
         with self.assertRaises(ValueError) as cm:
             model.ExternalReference(tuple())
@@ -956,6 +969,7 @@ class ExternalReferenceTest(unittest.TestCase):
 
 
 class ModelReferenceTest(unittest.TestCase):
+
     def test_constraints(self):
         with self.assertRaises(ValueError) as cm:
             model.ExternalReference(tuple())
@@ -1101,6 +1115,7 @@ class ModelReferenceTest(unittest.TestCase):
         dummy_submodel = model.Submodel("urn:x-test:x")
 
         class DummyObjectProvider(model.AbstractObjectProvider):
+
             def get_identifiable(self, identifier: Identifier) -> Identifiable:
                 return dummy_submodel
 
@@ -1117,6 +1132,7 @@ class ModelReferenceTest(unittest.TestCase):
         submodel = model.Submodel("urn:x-test:submodel", {list_})
 
         class DummyObjectProvider(model.AbstractObjectProvider):
+
             def get_identifiable(self, identifier: Identifier) -> Identifiable:
                 if identifier == submodel.id:
                     return submodel
@@ -1291,11 +1307,13 @@ class ModelReferenceTest(unittest.TestCase):
 
         # Test creating a reference to a custom Referable class
         class DummyThing(model.Referable):
+
             def __init__(self, id_short: model.NameType):
                 super().__init__()
                 self.id_short = id_short
 
         class DummyIdentifyableNamespace(model.Submodel, model.UniqueIdShortNamespace):
+
             def __init__(self, id_: model.Identifier):
                 super().__init__(id_)
                 self.things: model.NamespaceSet = model.NamespaceSet(self, [("id_short", True)])
@@ -1330,6 +1348,7 @@ class AdministrativeInformationTest(unittest.TestCase):
 
 
 class QualifierTest(unittest.TestCase):
+
     def test_set_value(self):
         qualifier = model.Qualifier("test", model.datatypes.Int, 2)
         self.assertEqual(qualifier.value, 2)
@@ -1338,6 +1357,7 @@ class QualifierTest(unittest.TestCase):
 
 
 class ExtensionTest(unittest.TestCase):
+
     def test_set_value(self):
         extension = model.Extension("test", model.datatypes.Int, 2)
         self.assertEqual(extension.value, 2)
@@ -1350,6 +1370,7 @@ class ExtensionTest(unittest.TestCase):
 
 
 class ValueReferencePairTest(unittest.TestCase):
+
     def test_set_value(self):
         pair = model.ValueReferencePair(
             value="2",
@@ -1361,6 +1382,7 @@ class ValueReferencePairTest(unittest.TestCase):
 
 
 class HasSemanticsTest(unittest.TestCase):
+
     def test_supplemental_semantic_id_constraint(self) -> None:
         extension = model.Extension(name="test")
         key: model.Key = model.Key(model.KeyTypes.GLOBAL_REFERENCE, "global_reference")
@@ -1392,6 +1414,7 @@ class HasSemanticsTest(unittest.TestCase):
 
 
 class ConstrainedListTest(unittest.TestCase):
+
     def test_length(self) -> None:
         c_list: model.ConstrainedList[int] = model.ConstrainedList([1, 2])
         self.assertEqual(len(c_list), 2)
@@ -1416,12 +1439,14 @@ class ConstrainedListTest(unittest.TestCase):
         def add_hook(itm: int, list_: List[int]) -> None:
             nonlocal new, existing_items
             new = itm
-            # Copy list, otherwise we just store a reference to the same lists and the tests are meaningless.
+            # Copy list, otherwise we just store a reference to the same lists and the
+            # tests are meaningless.
             existing_items = list_.copy()
 
         def set_hook(old: List[int], new: List[int], list_: List[int]) -> None:
             nonlocal old_items, new_items, existing_items
-            # Copy list, otherwise we just store a reference to the same lists and the tests are meaningless.
+            # Copy list, otherwise we just store a reference to the same lists and the
+            # tests are meaningless.
             old_items = old.copy()
             new_items = new.copy()
             existing_items = list_.copy()
@@ -1429,7 +1454,8 @@ class ConstrainedListTest(unittest.TestCase):
         def del_hook(itm: int, list_: List[int]) -> None:
             nonlocal new, existing_items
             new = itm
-            # Copy list, otherwise we just store a reference to the same lists and the tests are meaningless.
+            # Copy list, otherwise we just store a reference to the same lists and the
+            # tests are meaningless.
             existing_items = list_.copy()
 
         self.assertIsNone(new)
@@ -1509,6 +1535,7 @@ class ConstrainedListTest(unittest.TestCase):
         self.assertEqual(c_list, check_list)
 
     def test_atomicity(self) -> None:
+
         def hook(itm: int, _list: List[int]) -> None:
             if itm > 2:
                 raise ValueError
@@ -1543,6 +1570,7 @@ class ConstrainedListTest(unittest.TestCase):
 
 
 class LangStringSetTest(unittest.TestCase):
+
     def test_language_tag_constraints(self) -> None:
         with self.assertRaises(ValueError) as cm:
             model.LangStringSet({"foo": "bar"})

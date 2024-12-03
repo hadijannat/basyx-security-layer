@@ -10,17 +10,7 @@ This module contains everything needed to model Submodels and define Events acco
 
 import abc
 import uuid
-from typing import (
-    TYPE_CHECKING,
-    Generic,
-    Iterable,
-    List,
-    Optional,
-    Set,
-    Type,
-    TypeVar,
-    Union,
-)
+from typing import TYPE_CHECKING, Generic, Iterable, List, Optional, Set, Type, TypeVar, Union
 
 from . import _string_constraints, base, datatypes
 
@@ -860,7 +850,8 @@ class SubmodelElementList(SubmodelElement, base.UniqueIdShortNamespace, Generic[
         # Counter to generate a unique idShort whenever a SubmodelElement is added
         self._uuid_seq: int = 0
 
-        # It doesn't really make sense to change any of these properties. thus they are immutable here.
+        # It doesn't really make sense to change any of these properties. thus
+        # they are immutable here.
         self._type_value_list_element: Type[_SE] = type_value_list_element
         self._order_relevant: bool = order_relevant
         self._semantic_id_list_element: Optional[base.Reference] = semantic_id_list_element
@@ -894,7 +885,8 @@ class SubmodelElementList(SubmodelElement, base.UniqueIdShortNamespace, Generic[
             for i in value:
                 self._value.add(i)
         except Exception:
-            # Remove all SubmodelElements if an exception occurs during initialization of the SubmodelElementList
+            # Remove all SubmodelElements if an exception occurs during initialization
+            # of the SubmodelElementList
             self._value.clear()
             raise
 
@@ -916,7 +908,8 @@ class SubmodelElementList(SubmodelElement, base.UniqueIdShortNamespace, Generic[
 
     def _check_constraints(self, new: _SE, existing: Iterable[_SE]) -> None:
         # Since the id_short contains randomness, unset it temporarily for pretty and predictable error messages.
-        # This also prevents the random id_short from remaining set in case a constraint violation is encountered.
+        # This also prevents the random id_short from remaining set in case a
+        # constraint violation is encountered.
         saved_id_short = new.id_short
         new.id_short = None
 

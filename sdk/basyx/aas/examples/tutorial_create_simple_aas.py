@@ -19,7 +19,6 @@ from basyx.aas import model
 # Step 2: create a simple Submodel
 # Step 3: create a simple Property and add it to the Submodel
 
-
 ############################################################################################
 # Step 1: Create a Simple Asset Administration Shell Containing an AssetInformation object #
 ############################################################################################
@@ -34,7 +33,6 @@ aas = model.AssetAdministrationShell(
     id_=identifier, asset_information=asset_information  # set identifier
 )
 
-
 #############################################################
 # Step 2: Create a Simple Submodel Without SubmodelElements #
 #############################################################
@@ -43,9 +41,9 @@ aas = model.AssetAdministrationShell(
 identifier = "https://acplt.org/Simple_Submodel"
 submodel = model.Submodel(id_=identifier)
 
-# Step 2.2: create a reference to that Submodel and add it to the Asset Administration Shell's `submodel` set
+# Step 2.2: create a reference to that Submodel and add it to the Asset
+# Administration Shell's `submodel` set
 aas.submodel.add(model.ModelReference.from_referable(submodel))
-
 
 # ===============================================================
 # ALTERNATIVE: step 1 and 2 can alternatively be done in one step
@@ -57,13 +55,13 @@ aas = model.AssetAdministrationShell(
     submodel={model.ModelReference.from_referable(submodel)},
 )
 
-
 ###############################################################
 # Step 3: Create a Simple Property and Add it to the Submodel #
 ###############################################################
 
 # Step 3.1: create a global reference to a semantic description of the Property
-# A global reference consist of one key which points to the address where the semantic description is stored
+# A global reference consist of one key which points to the address where
+# the semantic description is stored
 semantic_reference = model.ExternalReference(
     (
         model.Key(
@@ -83,7 +81,6 @@ property_ = model.Property(
 
 # Step 3.3: add the Property to the Submodel
 submodel.submodel_element.add(property_)
-
 
 # =====================================================================
 # ALTERNATIVE: step 2 and 3 can also be combined in a single statement:

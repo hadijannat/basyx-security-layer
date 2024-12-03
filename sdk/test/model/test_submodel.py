@@ -12,6 +12,7 @@ from basyx.aas import model
 
 
 class EntityTest(unittest.TestCase):
+
     def test_aasd_014_init_self_managed(self) -> None:
         with self.assertRaises(model.AASConstraintViolation) as cm:
             model.Entity("TestEntity", model.EntityType.SELF_MANAGED_ENTITY)
@@ -216,6 +217,7 @@ class EntityTest(unittest.TestCase):
 
 
 class PropertyTest(unittest.TestCase):
+
     def test_set_value(self):
         property = model.Property("test", model.datatypes.Int, 2)
         self.assertEqual(property.value, 2)
@@ -224,6 +226,7 @@ class PropertyTest(unittest.TestCase):
 
 
 class RangeTest(unittest.TestCase):
+
     def test_set_min_max(self):
         range = model.Range("test", model.datatypes.Int, 2, 5)
         self.assertEqual(range.min, 2)
@@ -235,6 +238,7 @@ class RangeTest(unittest.TestCase):
 
 
 class SubmodelElementListTest(unittest.TestCase):
+
     def test_constraints(self):
         # AASd-107
         mlp = model.MultiLanguageProperty(
@@ -293,7 +297,8 @@ class SubmodelElementListTest(unittest.TestCase):
             ),
         )
         # This tests checks if subclasses of the required type are rejected in a SubmodelElementList.
-        # Thus, a requirement is that AnnotatedRelationshipElement is a subclass of RelationshipElement:
+        # Thus, a requirement is that AnnotatedRelationshipElement is a subclass
+        # of RelationshipElement:
         self.assertIsInstance(are, model.RelationshipElement)
         with self.assertRaises(model.AASConstraintViolation) as cm:
             model.SubmodelElementList("test_list", model.RelationshipElement, {are})
@@ -306,7 +311,8 @@ class SubmodelElementListTest(unittest.TestCase):
         model.SubmodelElementList("test_list", model.AnnotatedRelationshipElement, {are})
 
         # AASd-109
-        # Pass an item to the constructor to assert that this constraint is checked before items are added.
+        # Pass an item to the constructor to assert that this constraint is
+        # checked before items are added.
         prop = model.Property(None, model.datatypes.Int, 0)
         with self.assertRaises(model.AASConstraintViolation) as cm:
             model.SubmodelElementList("test_list", model.Property, [prop])
@@ -431,6 +437,7 @@ class SubmodelElementListTest(unittest.TestCase):
 
 
 class BasicEventElementTest(unittest.TestCase):
+
     def test_constraints(self):
         with self.assertRaises(ValueError) as cm:
             model.BasicEventElement(

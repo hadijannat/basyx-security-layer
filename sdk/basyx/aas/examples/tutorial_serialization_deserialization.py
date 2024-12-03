@@ -23,7 +23,6 @@ from basyx.aas import model
 # Step 4: writing multiple identifiable objects to a (standard-compliant) JSON/XML file
 # Step 5: reading the serialized aas objects from JSON/XML files
 
-
 ####################################################################
 # Step 1: Creating Submodel and Asset Administration Shell Objects #
 ####################################################################
@@ -54,7 +53,6 @@ aashell = model.AssetAdministrationShell(
     submodel={model.ModelReference.from_referable(submodel)},
 )
 
-
 ##############################################
 # Step 2: Serializing Single Objects to JSON #
 ##############################################
@@ -75,11 +73,11 @@ property_json_string = json.dumps(
     cls=basyx.aas.adapter.json.AASToJsonEncoder,
 )
 
-# Using this technique, we can also serialize Python dict and list data structures with nested AAS objects:
+# Using this technique, we can also serialize Python dict and list data
+# structures with nested AAS objects:
 json_string = json.dumps(
     {"the_submodel": submodel, "the_aas": aashell}, cls=basyx.aas.adapter.json.AASToJsonEncoder
 )
-
 
 ######################################################################
 # Step 3: Parsing Single Objects or Custom Data Structures from JSON #
@@ -93,8 +91,8 @@ submodel_and_aas = json.loads(json_string, cls=basyx.aas.adapter.json.AASFromJso
 
 # Alternatively, one can use the `StrictAASFromJsonDecoder` which works in just the same way, but enforces the format
 # specification more strictly. While `AASFromJSONDecoder` will tolerate some semantic errors by simple skipping the
-# broken object and issuing a log message, `StrictAASFromJsonDecoder` will raise an Exception in these cases.
-
+# broken object and issuing a log message, `StrictAASFromJsonDecoder` will
+# raise an Exception in these cases.
 
 #########################################################################################
 # Step 4: Writing Multiple Identifiable Objects to a (Standard-compliant) JSON/XML File #
@@ -118,7 +116,6 @@ basyx.aas.adapter.json.write_aas_json_file("data.json", obj_store)
 
 # step 4.4: writing the contents of the ObjectStore to an XML file
 basyx.aas.adapter.xml.write_aas_xml_file("data.xml", obj_store)
-
 
 ##################################################################
 # Step 5: Reading the Serialized AAS Objects From JSON/XML Files #

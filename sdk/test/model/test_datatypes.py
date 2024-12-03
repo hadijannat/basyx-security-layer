@@ -14,6 +14,7 @@ from basyx.aas import model
 
 
 class TestIntTypes(unittest.TestCase):
+
     def test_parse_int(self) -> None:
         self.assertEqual(5, model.datatypes.from_xsd("5", model.datatypes.Integer))
         self.assertEqual(6, model.datatypes.from_xsd("6", model.datatypes.Byte))
@@ -94,6 +95,7 @@ class TestIntTypes(unittest.TestCase):
 
 
 class TestStringTypes(unittest.TestCase):
+
     def test_normalized_string(self) -> None:
         self.assertEqual("abc", model.datatypes.NormalizedString("abc"))
         with self.assertRaises(ValueError) as cm:
@@ -112,6 +114,7 @@ class TestStringTypes(unittest.TestCase):
 
 
 class TestDateTimeTypes(unittest.TestCase):
+
     def test_parse_duration(self) -> None:
         # Examples from https://www.w3.org/TR/xmlschema-2/#duration-lexical-repr
         self.assertEqual(
@@ -374,6 +377,7 @@ class TestDateTimeTypes(unittest.TestCase):
 
 
 class TestBoolType(unittest.TestCase):
+
     def test_parse_bool(self) -> None:
         self.assertEqual(True, model.datatypes.from_xsd("true", model.datatypes.Boolean))
         self.assertEqual(True, model.datatypes.from_xsd("1", model.datatypes.Boolean))
@@ -389,6 +393,7 @@ class TestBoolType(unittest.TestCase):
 
 
 class TestBinaryTypes(unittest.TestCase):
+
     def test_base64(self) -> None:
         self.assertEqual(
             b"abc\0def", model.datatypes.from_xsd("YWJjAGRlZg==", model.datatypes.Base64Binary)
@@ -413,11 +418,14 @@ class TestBinaryTypes(unittest.TestCase):
 
 
 class TestFloatType(unittest.TestCase):
+
     def test_float(self) -> None:
         self.assertEqual(5.1, model.datatypes.from_xsd("5.1", model.datatypes.Double))
         self.assertEqual(-7.0, model.datatypes.from_xsd("-7", model.datatypes.Double))
         self.assertEqual(5300, model.datatypes.from_xsd("5.3E3", model.datatypes.Double))
-        self.assertTrue(math.isnan(model.datatypes.from_xsd("NaN", model.datatypes.Double)))  # type: ignore
+        self.assertTrue(
+            math.isnan(model.datatypes.from_xsd("NaN", model.datatypes.Double))
+        )  # type: ignore
         self.assertEqual(float("inf"), model.datatypes.from_xsd("INF", model.datatypes.Double))
         self.assertEqual(float("-inf"), model.datatypes.from_xsd("-INF", model.datatypes.Double))
 
@@ -430,6 +438,7 @@ class TestFloatType(unittest.TestCase):
 
 
 class TestDecimalType(unittest.TestCase):
+
     def test_parse_decimal(self) -> None:
         self.assertEqual(
             model.datatypes.Decimal("0.1"), model.datatypes.from_xsd("0.1", model.datatypes.Decimal)

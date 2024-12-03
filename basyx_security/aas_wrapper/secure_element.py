@@ -31,9 +31,8 @@ class SecureElement:
         Raises:
             SecurityViolation: If access is denied
         """
-        if not self._security_manager.check_access(
-            context, self._element.id_short, AccessRight.READ
-        ):
+        if not self._security_manager.check_access(context, self._element.id_short,
+                                                   AccessRight.READ):
             raise SecurityViolation(f"Access denied to read {self._element.id_short}")
         return self._element.value
 
@@ -48,9 +47,8 @@ class SecureElement:
         Raises:
             SecurityViolation: If access is denied
         """
-        if not self._security_manager.check_access(
-            context, self._element.id_short, AccessRight.WRITE
-        ):
+        if not self._security_manager.check_access(context, self._element.id_short,
+                                                   AccessRight.WRITE):
             raise SecurityViolation(f"Access denied to write to {self._element.id_short}")
         self._element.value = value
 

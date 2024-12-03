@@ -118,13 +118,15 @@ class KeyTypes(Enum):
     SUBMODEL = 3
 
     # AasSubmodelElements starting from 1000
-    # keep _ACCESS_PERMISSION_RULE = 1000 as a protected enum member here, so 1000 isn't reused by a future key type
+    # keep _ACCESS_PERMISSION_RULE = 1000 as a protected enum member here, so
+    # 1000 isn't reused by a future key type
     _ACCESS_PERMISSION_RULE = 1000
     ANNOTATED_RELATIONSHIP_ELEMENT = 1001
     BASIC_EVENT_ELEMENT = 1002
     BLOB = 1003
     CAPABILITY = 1004
-    # keep _CONCEPT_DICTIONARY = 1005 as a protected enum member here, so 1005 isn't reused by a future key type
+    # keep _CONCEPT_DICTIONARY = 1005 as a protected enum member here, so 1005
+    # isn't reused by a future key type
     _CONCEPT_DICTIONARY = 1005
     DATA_ELEMENT = 1006
     ENTITY = 1007
@@ -455,7 +457,7 @@ class Key:
         raise AttributeError("Reference is immutable")
 
     def __repr__(self) -> str:
-        return "Key(type={}, value={})".format(self.type.name, self.value)
+        return f"Key(type={self.type.name}, value={self.value})"
 
     def __str__(self) -> str:
         return self.value
@@ -663,7 +665,8 @@ class Referable(HasExtension, metaclass=abc.ABCMeta):
         self._category: Optional[NameType] = None
         self.description: Optional[MultiLanguageTextType] = dict()
         # We use a Python reference to the parent Namespace instead of a Reference Object, as specified. This allows
-        # simpler and faster navigation/checks and it has no effect in the serialized data formats anyway.
+        # simpler and faster navigation/checks and it has no effect in the
+        # serialized data formats anyway.
         self.parent: Optional[UniqueIdShortNamespace] = None
         self.source: str = ""
 
@@ -791,7 +794,8 @@ class Referable(HasExtension, metaclass=abc.ABCMeta):
             self._id_short = id_short
             for set_ in set_add_list:
                 set_.add(self)
-        # Redundant to the line above. However, this way, we make sure that we really update the _id_short
+        # Redundant to the line above. However, this way, we make sure that we
+        # really update the _id_short
         self._id_short = id_short
 
     def update(
@@ -811,7 +815,8 @@ class Referable(HasExtension, metaclass=abc.ABCMeta):
         """
         # TODO consider max_age
         if not _indirect_source:
-            # Update was already called on an ancestor of this Referable. Only update it, if it has its own source
+            # Update was already called on an ancestor of this Referable. Only update
+            # it, if it has its own source
             if self.source != "":
                 backends.get_backend(self.source).update_object(
                     updated_object=self, store_object=self, relative_path=[]
@@ -874,7 +879,8 @@ class Referable(HasExtension, metaclass=abc.ABCMeta):
                               recursively
         """
         for name, var in vars(other).items():
-            # do not update the parent, namespace_element_sets or source (depending on update_source parameter)
+            # do not update the parent, namespace_element_sets or source (depending on
+            # update_source parameter)
             if (
                 name in ("parent", "namespace_element_sets")
                 or name == "source"
@@ -973,7 +979,8 @@ class Reference(metaclass=abc.ABCMeta):
         if len(key) < 1:
             raise ValueError("A reference must have at least one key!")
 
-        # Constraint AASd-121 is enforced by checking AASd-122 for external references and AASd-123 for model references
+        # Constraint AASd-121 is enforced by checking AASd-122 for external
+        # references and AASd-123 for model references
 
         self.key: Tuple[Key, ...]
         self.referred_semantic_id: Optional["Reference"]
@@ -1039,7 +1046,7 @@ class ExternalReference(Reference):
             )
 
     def __repr__(self) -> str:
-        return "ExternalReference(key={})".format(self.key)
+        return f"ExternalReference(key={self.key})"
 
 
 class ModelReference(Reference, Generic[_RT]):
@@ -1141,7 +1148,8 @@ class ModelReference(Reference, Generic[_RT]):
         :raises KeyError: If the reference could not be resolved
         """
 
-        # For ModelReferences, the first key must be an AasIdentifiable. So resolve the first key via the provider.
+        # For ModelReferences, the first key must be an AasIdentifiable. So
+        # resolve the first key via the provider.
         identifier: Optional[Identifier] = self.key[0].get_identifier()
         if identifier is None:
             raise AssertionError(f"Retrieving the identifier of the first {self.key[0]!r} failed.")
@@ -1149,7 +1157,7 @@ class ModelReference(Reference, Generic[_RT]):
         try:
             item: Referable = provider_.get_identifiable(identifier)
         except KeyError as e:
-            raise KeyError("Could not resolve identifier {}".format(identifier)) from e
+            raise KeyError(f"Could not resolve identifier {identifier}") from e
 
         # All keys following the first must not reference identifiables (AASd-125). Thus, we can just resolve the
         # id_short path via get_referable().
@@ -1189,7 +1197,7 @@ class ModelReference(Reference, Generic[_RT]):
             )
 
     def __repr__(self) -> str:
-        return "ModelReference<{}>(key={})".format(self.type.__name__, self.key)
+        return f"ModelReference<{self.type.__name__}>(key={self.key})"
 
     @staticmethod
     def from_referable(referable: Referable) -> "ModelReference":
@@ -1207,7 +1215,8 @@ class ModelReference(Reference, Generic[_RT]):
         :raises ValueError: If no :class:`~basyx.aas.model.base.Identifiable` object is found while traversing the
                             object's ancestors
         """
-        # Get the first class from the base classes list (via inspect.getmro), that is contained in KEY_ELEMENTS_CLASSES
+        # Get the first class from the base classes list (via inspect.getmro),
+        # that is contained in KEY_ELEMENTS_CLASSES
         from . import KEY_TYPES_CLASSES
 
         try:
@@ -1418,7 +1427,7 @@ class Identifiable(Referable, metaclass=abc.ABCMeta):
         self.id: Identifier
 
     def __repr__(self) -> str:
-        return "{}[{}]".format(self.__class__.__name__, self.id)
+        return f"{self.__class__.__name__}[{self.id}]"
 
 
 _T = TypeVar("_T")
@@ -1517,7 +1526,8 @@ class ConstrainedList(MutableSequence[_T], Generic[_T]):
             indices = range(len(self._list))[index]
             # To avoid partial deletions, perform a dry run first.
             dry_run_list = self._list.copy()
-            # Delete high indices first to avoid conflicts by changing indices due to deletion of other objects.
+            # Delete high indices first to avoid conflicts by changing indices due to
+            # deletion of other objects.
             for i in sorted(indices, reverse=True):
                 self._item_del_hook(dry_run_list[i], dry_run_list)
                 del dry_run_list[i]
@@ -1594,7 +1604,8 @@ class HasSemantics(metaclass=abc.ABCMeta):
             self._semantic_id = semantic_id
             for set_ in set_add_list:
                 set_.add(self)
-        # Redundant to the line above. However, this way, we make sure that we really update the _semantic_id
+        # Redundant to the line above. However, this way, we make sure that we
+        # really update the _semantic_id
         self._semantic_id = semantic_id
 
     @property
@@ -1643,7 +1654,7 @@ class Extension(HasSemantics):
         )
 
     def __repr__(self) -> str:
-        return "Extension(name={})".format(self.name)
+        return f"Extension(name={self.name})"
 
     @property
     def value(self):
@@ -1681,7 +1692,8 @@ class Extension(HasSemantics):
             self._name = name
             for set_ in set_add_list:
                 set_.add(self)
-        # Redundant to the line above. However, this way, we make sure that we really update the _name
+        # Redundant to the line above. However, this way, we make sure that we
+        # really update the _name
         self._name = name
 
 
@@ -1803,7 +1815,7 @@ class Qualifier(HasSemantics):
         )
 
     def __repr__(self) -> str:
-        return "Qualifier(type={})".format(self.type)
+        return f"Qualifier(type={self.type})"
 
     @property
     def value(self):
@@ -1839,7 +1851,8 @@ class Qualifier(HasSemantics):
             self._type = type_
             for set_ in set_add_list:
                 set_.add(self)
-        # Redundant to the line above. However, this way, we make sure that we really update the _type
+        # Redundant to the line above. However, this way, we make sure that we
+        # really update the _type
         self._type = type_
 
 
@@ -1864,7 +1877,7 @@ class ValueReferencePair:
         self.value: ValueTypeIEC61360 = value
 
     def __repr__(self) -> str:
-        return "ValueReferencePair(value={}, value_id={})".format(self.value, self.value_id)
+        return f"ValueReferencePair(value={self.value}, value_id={self.value_id})"
 
 
 class UniqueIdShortNamespace(Namespace, metaclass=abc.ABCMeta):
@@ -1919,7 +1932,9 @@ class UniqueIdShortNamespace(Namespace, metaclass=abc.ABCMeta):
                     # stored in boolean variables.
                     item = item.value[int(id_)]  # type: ignore
                 else:
-                    item = item._get_object(Referable, "id_short", id_)  # type: ignore[type-abstract]
+                    item = item._get_object(
+                        Referable, "id_short", id_
+                    )  # type: ignore[type-abstract]
             except ValueError as e:
                 raise ValueError(
                     f"Cannot resolve '{id_}' at {item!r}, because it is not a numeric index!"
@@ -2159,7 +2174,10 @@ class NamespaceSet(MutableSet[_NSO], Generic[_NSO]):
         if attr in backend_dict:
             if set_ is self:
                 text = (
-                    f"Object with attribute (name='{attr_name}', value='{getattr(element, attr_name)}') "
+                    f"Object with attribute (name='{attr_name}', value='{
+                        getattr(
+                            element,
+                            attr_name)}') "
                     f"is already present in this set of objects"
                 )
             else:
@@ -2233,7 +2251,9 @@ class NamespaceSet(MutableSet[_NSO], Generic[_NSO]):
         :raises KeyError: If no such object can be found
         """
         backend, case_sensitive = self._backend[attribute_name]
-        return backend[attribute_value if case_sensitive else attribute_value.upper()]  # type: ignore
+        return backend[
+            attribute_value if case_sensitive else attribute_value.upper()
+        ]  # type: ignore
 
     def get(
         self, attribute_name: str, attribute_value: str, default: Optional[_NSO] = None
@@ -2274,13 +2294,15 @@ class NamespaceSet(MutableSet[_NSO], Generic[_NSO]):
                     qualifier = backend[
                         other_object.type if case_sensitive else other_object.type.upper()
                     ]
-                    # qualifier.update_from(other_object, update_source=True) # TODO: What should happen here?
+                    # qualifier.update_from(other_object, update_source=True) # TODO: What
+                    # should happen here?
                 elif isinstance(other_object, Extension):
                     backend, case_sensitive = self._backend["name"]
                     extension = backend[
                         other_object.name if case_sensitive else other_object.name.upper()
                     ]
-                    # extension.update_from(other_object, update_source=True) # TODO: What should happen here?
+                    # extension.update_from(other_object, update_source=True) # TODO: What
+                    # should happen here?
                 else:
                     raise TypeError("Type not implemented")
             except KeyError:
@@ -2476,7 +2498,8 @@ class SpecificAssetId(HasSemantics):
         # Hack to make the HasSemantics inheritance work
         # HasSemantics.__init__ sets the parent attribute to None, so that has to be possible. It needs to be set
         # because its value is checked in the semantic_id setter and since every subclass of HasSemantics is expected
-        # to have this attribute. Additionally, the protected _semantic_id attribute must be settable.
+        # to have this attribute. Additionally, the protected _semantic_id
+        # attribute must be settable.
         if (
             key == "_semantic_id"
             or key == "_supplemental_semantic_id"

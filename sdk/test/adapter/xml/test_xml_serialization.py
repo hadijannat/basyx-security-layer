@@ -22,6 +22,7 @@ XML_SCHEMA_FILE = os.path.join(os.path.dirname(__file__), "../schemas/aasXMLSche
 
 
 class XMLSerializationTest(unittest.TestCase):
+
     def test_serialize_object(self) -> None:
         test_object = model.Property(
             "test_id_short",
@@ -56,6 +57,7 @@ class XMLSerializationTest(unittest.TestCase):
 
 
 class XMLSerializationSchemaTest(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
         if not os.path.exists(XML_SCHEMA_FILE):

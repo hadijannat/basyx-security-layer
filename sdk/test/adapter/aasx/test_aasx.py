@@ -15,14 +15,11 @@ import warnings
 import pyecma376_2
 from basyx.aas import model
 from basyx.aas.adapter import aasx
-from basyx.aas.examples.data import (
-    _helper,
-    example_aas,
-    example_aas_mandatory_attributes,
-)
+from basyx.aas.examples.data import _helper, example_aas, example_aas_mandatory_attributes
 
 
 class TestAASXUtils(unittest.TestCase):
+
     def test_supplementary_file_container(self) -> None:
         container = aasx.DictSupplementaryFileContainer()
         with open(os.path.join(os.path.dirname(__file__), "TestFile.pdf"), "rb") as f:
@@ -75,6 +72,7 @@ class TestAASXUtils(unittest.TestCase):
 
 
 class AASXWriterTest(unittest.TestCase):
+
     def test_writing_reading_example_aas(self) -> None:
         # Create example data and file_store
         data = example_aas.create_full_example()

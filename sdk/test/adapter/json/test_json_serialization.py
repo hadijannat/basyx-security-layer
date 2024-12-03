@@ -11,11 +11,7 @@ import unittest
 from typing import Set, Union
 
 from basyx.aas import model
-from basyx.aas.adapter.json import (
-    AASToJsonEncoder,
-    StrippedAASToJsonEncoder,
-    write_aas_json_file,
-)
+from basyx.aas.adapter.json import AASToJsonEncoder, StrippedAASToJsonEncoder, write_aas_json_file
 from basyx.aas.examples.data import (
     create_example,
     example_aas,
@@ -29,6 +25,7 @@ JSON_SCHEMA_FILE = os.path.join(os.path.dirname(__file__), "../schemas/aasJSONSc
 
 
 class JsonSerializationTest(unittest.TestCase):
+
     def test_serialize_object(self) -> None:
         test_object = model.Property(
             "test_id_short",
@@ -65,6 +62,7 @@ class JsonSerializationTest(unittest.TestCase):
 
 
 class JsonSerializationSchemaTest(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
         if not os.path.exists(JSON_SCHEMA_FILE):
@@ -99,7 +97,7 @@ class JsonSerializationSchemaTest(unittest.TestCase):
         json_data_new = json.loads(json_data)
 
         # load schema
-        with open(JSON_SCHEMA_FILE, "r") as json_file:
+        with open(JSON_SCHEMA_FILE) as json_file:
             aas_schema = json.load(json_file)
 
         # validate serialization against schema
@@ -110,7 +108,7 @@ class JsonSerializationSchemaTest(unittest.TestCase):
         file = io.StringIO()
         write_aas_json_file(file=file, data=data)
 
-        with open(JSON_SCHEMA_FILE, "r") as json_file:
+        with open(JSON_SCHEMA_FILE) as json_file:
             aas_json_schema = json.load(json_file)
 
         file.seek(0)
@@ -125,7 +123,7 @@ class JsonSerializationSchemaTest(unittest.TestCase):
         file = io.StringIO()
         write_aas_json_file(file=file, data=data)
 
-        with open(JSON_SCHEMA_FILE, "r") as json_file:
+        with open(JSON_SCHEMA_FILE) as json_file:
             aas_json_schema = json.load(json_file)
 
         file.seek(0)
@@ -139,7 +137,7 @@ class JsonSerializationSchemaTest(unittest.TestCase):
         file = io.StringIO()
         write_aas_json_file(file=file, data=data)
 
-        with open(JSON_SCHEMA_FILE, "r") as json_file:
+        with open(JSON_SCHEMA_FILE) as json_file:
             aas_json_schema = json.load(json_file)
 
         file.seek(0)
@@ -153,7 +151,7 @@ class JsonSerializationSchemaTest(unittest.TestCase):
         file = io.StringIO()
         write_aas_json_file(file=file, data=data)
 
-        with open(JSON_SCHEMA_FILE, "r") as json_file:
+        with open(JSON_SCHEMA_FILE) as json_file:
             aas_json_schema = json.load(json_file)
 
         file.seek(0)
@@ -168,7 +166,7 @@ class JsonSerializationSchemaTest(unittest.TestCase):
         file = io.StringIO()
         write_aas_json_file(file=file, data=data)
 
-        with open(JSON_SCHEMA_FILE, "r") as json_file:
+        with open(JSON_SCHEMA_FILE) as json_file:
             aas_json_schema = json.load(json_file)
 
         file.seek(0)
@@ -182,7 +180,7 @@ class JsonSerializationSchemaTest(unittest.TestCase):
         file = io.StringIO()
         write_aas_json_file(file=file, data=data)
 
-        with open(JSON_SCHEMA_FILE, "r") as json_file:
+        with open(JSON_SCHEMA_FILE) as json_file:
             aas_json_schema = json.load(json_file)
 
         file.seek(0)
@@ -193,6 +191,7 @@ class JsonSerializationSchemaTest(unittest.TestCase):
 
 
 class JsonSerializationStrippedObjectsTest(unittest.TestCase):
+
     def _checkNormalAndStripped(self, attributes: Union[Set[str], str], obj: object) -> None:
         if isinstance(attributes, str):
             attributes = {attributes}

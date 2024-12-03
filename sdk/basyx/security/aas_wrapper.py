@@ -9,7 +9,7 @@ This module provides secure wrappers for AAS components, implementing:
 """
 
 import logging
-from typing import Any, Dict, Optional, Set
+from typing import Dict, Optional
 
 from basyx.aas import model
 
@@ -113,9 +113,8 @@ class SecureSubmodel:
             raise SecurityViolation(f"Access denied to submodel {self._submodel.id}")
 
         if element_id not in self._secure_elements:
-            element = next(
-                (e for e in self._submodel.submodel_element if e.id_short == element_id), None
-            )
+            element = next((e for e in self._submodel.submodel_element if e.id_short == element_id),
+                           None)
             if element is None:
                 raise ValueError(
                     f"Element {element_id} not found in submodel {self._submodel.id_short}"

@@ -20,6 +20,7 @@ from .._helper.test_helpers import COUCHDB_ERROR, COUCHDB_OKAY, TEST_CONFIG
 
 
 class TutorialTest(unittest.TestCase):
+
     def test_tutorial_create_simple_aas(self):
         from basyx.aas.examples import tutorial_create_simple_aas
 
@@ -33,7 +34,8 @@ class TutorialTest(unittest.TestCase):
     def test_tutorial_storage(self):
         from basyx.aas.examples import tutorial_storage
 
-        # The tutorial already includes assert statements for the relevant points. So no further checks are required.
+        # The tutorial already includes assert statements for the relevant points.
+        # So no further checks are required.
 
     @unittest.skipUnless(
         COUCHDB_OKAY,
@@ -49,14 +51,16 @@ class TutorialTest(unittest.TestCase):
             from basyx.aas.examples import tutorial_serialization_deserialization
 
             pass
-        # The tutorial already includes assert statements for the relevant points. So no further checks are required.
+        # The tutorial already includes assert statements for the relevant points.
+        # So no further checks are required.
 
     def test_tutorial_aasx(self):
         with temporary_workingdirectory():
             from basyx.aas.examples import tutorial_aasx
 
             pass
-        # The tutorial already includes assert statements for the relevant points. So no further checks are required.
+        # The tutorial already includes assert statements for the relevant points.
+        # So no further checks are required.
 
 
 @contextmanager

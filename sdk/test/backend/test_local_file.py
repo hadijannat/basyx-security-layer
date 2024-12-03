@@ -13,10 +13,11 @@ from basyx.aas.backend import local_file
 from basyx.aas.examples.data.example_aas import *
 
 store_path: str = os.path.dirname(__file__) + "/local_file_test_folder"
-source_core: str = "file://localhost/{}/".format(store_path)
+source_core: str = f"file://localhost/{store_path}/"
 
 
 class LocalFileBackendTest(unittest.TestCase):
+
     def setUp(self) -> None:
         self.object_store = local_file.LocalFileObjectStore(store_path)
         self.object_store.check_directory(create=True)

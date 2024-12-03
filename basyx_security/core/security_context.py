@@ -30,7 +30,10 @@ class SecurityContext:
 
 
 def create_security_context(
-    user_id: str, roles: Set[str], security_level: SecurityLevel, token: Optional[str] = None
+    user_id: str,
+    roles: Set[str],
+    security_level: SecurityLevel,
+    token: Optional[str] = None
 ) -> SecurityContext:
     """
     Create a new security context.

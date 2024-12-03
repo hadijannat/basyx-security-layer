@@ -17,6 +17,7 @@ from basyx.aas.examples.data._helper import AASDataChecker
 
 
 class ExampleAASTest(unittest.TestCase):
+
     def test_example_asset_identification_submodel(self):
         checker = AASDataChecker(raise_immediately=True)
         submodel = example_aas.create_example_asset_identification_submodel()
@@ -79,6 +80,7 @@ class ExampleAASTest(unittest.TestCase):
         obj_store.discard(failed_cd)
 
         class DummyIdentifiable(model.Identifiable):
+
             def __init__(self, id_: model.Identifier):
                 super().__init__()
                 self.id = id_
@@ -93,6 +95,7 @@ class ExampleAASTest(unittest.TestCase):
 
 
 class ExampleAASMandatoryTest(unittest.TestCase):
+
     def test_example_submodel(self):
         checker = AASDataChecker(raise_immediately=True)
         submodel = example_aas_mandatory_attributes.create_example_submodel()
@@ -131,6 +134,7 @@ class ExampleAASMandatoryTest(unittest.TestCase):
 
 
 class ExampleAASMissingTest(unittest.TestCase):
+
     def test_example_submodel(self):
         checker = AASDataChecker(raise_immediately=True)
         submodel = example_aas_missing_attributes.create_example_submodel()
@@ -164,6 +168,7 @@ class ExampleAASMissingTest(unittest.TestCase):
 
 
 class ExampleSubmodelTemplate(unittest.TestCase):
+
     def test_example_submodel_template(self):
         checker = AASDataChecker(raise_immediately=True)
         submodel = example_submodel_template.create_example_submodel_template()

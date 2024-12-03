@@ -25,4 +25,4 @@ def fix_imports():
 
 
 if __name__ == "__main__":
-    fix_imports() 
+    fix_imports()

@@ -11,7 +11,11 @@ import unittest
 from typing import IO, Iterable
 
 from basyx.aas import model
-from basyx.aas.adapter.json import AASToJsonEncoder, read_aas_json_file, write_aas_json_file
+from basyx.aas.adapter.json import (
+    AASToJsonEncoder,
+    read_aas_json_file,
+    write_aas_json_file,
+)
 from basyx.aas.examples.data import (
     create_example,
     example_aas,

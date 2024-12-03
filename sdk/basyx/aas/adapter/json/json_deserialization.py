@@ -44,7 +44,18 @@ import contextlib
 import json
 import logging
 import pprint
-from typing import IO, Callable, ContextManager, Dict, List, Optional, Set, Type, TypeVar, get_args
+from typing import (
+    IO,
+    Callable,
+    ContextManager,
+    Dict,
+    List,
+    Optional,
+    Set,
+    Type,
+    TypeVar,
+    get_args,
+)
 
 from basyx.aas import model
 

@@ -10,7 +10,17 @@ This module contains everything needed to model Submodels and define Events acco
 
 import abc
 import uuid
-from typing import TYPE_CHECKING, Generic, Iterable, List, Optional, Set, Type, TypeVar, Union
+from typing import (
+    TYPE_CHECKING,
+    Generic,
+    Iterable,
+    List,
+    Optional,
+    Set,
+    Type,
+    TypeVar,
+    Union,
+)
 
 from . import _string_constraints, base, datatypes
 

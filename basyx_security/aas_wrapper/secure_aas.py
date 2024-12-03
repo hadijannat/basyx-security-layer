@@ -33,8 +33,9 @@ class SecureAAS:
                     key = key[0]
                 submodel = provider.get_submodel(key.value)
                 if submodel:
-                    self._secure_submodels[submodel.id_short
-                                           ] = SecureSubmodel(submodel, security_manager)
+                    self._secure_submodels[submodel.id_short] = SecureSubmodel(
+                        submodel, security_manager
+                    )
 
     def get_submodel(self, context: SecurityContext, submodel_id: str) -> Optional[SecureSubmodel]:
         """

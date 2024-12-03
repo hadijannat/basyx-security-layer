@@ -56,10 +56,7 @@ class SessionManager:
         self._cleanup_thread.start()
 
     def create_session(
-        self,
-        user_id: str,
-        roles: Set[str],
-        session_duration: Optional[timedelta] = None
+        self, user_id: str, roles: Set[str], session_duration: Optional[timedelta] = None
     ) -> Session:
         """
         Create a new session.

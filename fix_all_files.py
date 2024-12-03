@@ -8,14 +8,16 @@ def fix_file(file_path):
     print(f"Fixing {file_path}...")
 
     # Run autopep8 first
-    subprocess.run([
-        "autopep8",
-        "--in-place",
-        "--aggressive",
-        "--aggressive",
-        "--max-line-length=100",
-        str(file_path),
-    ])
+    subprocess.run(
+        [
+            "autopep8",
+            "--in-place",
+            "--aggressive",
+            "--aggressive",
+            "--max-line-length=100",
+            str(file_path),
+        ]
+    )
 
     # Then run black
     subprocess.run(["black", "--line-length=100", str(file_path)])

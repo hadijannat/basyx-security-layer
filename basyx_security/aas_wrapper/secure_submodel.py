@@ -38,8 +38,9 @@ class SecureSubmodel:
         Raises:
             SecurityViolation: If access is denied
         """
-        if not self._security_manager.check_access(context, self._submodel.id_short,
-                                                   AccessRight.READ):
+        if not self._security_manager.check_access(
+            context, self._submodel.id_short, AccessRight.READ
+        ):
             raise SecurityViolation(f"Access denied to read submodel {self._submodel.id_short}")
 
         return self._secure_elements.get(element_id)
@@ -55,8 +56,9 @@ class SecureSubmodel:
         Raises:
             SecurityViolation: If access is denied
         """
-        if not self._security_manager.check_access(context, self._submodel.id_short,
-                                                   AccessRight.WRITE):
+        if not self._security_manager.check_access(
+            context, self._submodel.id_short, AccessRight.WRITE
+        ):
             raise SecurityViolation(f"Access denied to modify submodel {self._submodel.id_short}")
 
         self._submodel.submodel_element.add(element)

@@ -2182,7 +2182,10 @@ class NamespaceSet(MutableSet[_NSO], Generic[_NSO]):
                 )
             else:
                 text = (
-                    f"Object with attribute (name='{attr_name}', value='{getattr(element, attr_name)}') "
+                    f"Object with attribute (name='{attr_name}', value='{
+                        getattr(
+                            element,
+                            attr_name)}') "
                     f"is already present in another set in the same namespace"
                 )
             raise AASConstraintViolation(ATTRIBUTES_CONSTRAINT_IDS.get(attr_name, 0), text)

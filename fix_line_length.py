@@ -1,32 +1,62 @@
-import os
+#!/usr/bin/env python3
+"""Script to fix line length issues in Python files."""
+
 import subprocess
+from pathlib import Path
 
 
-def fix_file(file_path):
-    # Run autopep8 with aggressive mode and line length 100
+def find_python_files(directory="."):
+    """Find all Python files in the given directory and subdirectories."""
+    return list(Path(directory).rglob("*.py"))
+
+
+def fix_line_length(file_path):
+    """Fix line length issues in a single file."""
+    print(f"Fixing line length in {file_path}")
+    
+    # First use autopep8 to handle basic line wrapping
     subprocess.run(
         [
             "autopep8",
             "--in-place",
             "--aggressive",
-            "--aggressive",
             "--max-line-length=100",
-            file_path,
-        ]
+            str(file_path),
+        ],
+        check=True,
     )
-
-    # Run black as a backup
-    subprocess.run(["black", "--line-length=100", file_path])
+    
+    # Then use black to ensure consistent formatting
+    subprocess.run(["black", "--line-length=100", str(file_path)], check=True)
 
 
 def main():
-    # Walk through all Python files in sdk directory
-    for root, dirs, files in os.walk("sdk"):
-        for file in files:
-            if file.endswith(".py"):
-                file_path = os.path.join(root, file)
-                print(f"Fixing {file_path}...")
-                fix_file(file_path)
+    """Find and fix all Python files with line length issues."""
+    # Directories to scan
+    scan_dirs = ["sdk", "server", "tests", "examples"]
+    
+    # Directories to skip
+    skip_dirs = {
+        "__pycache__",
+        "build",
+        "dist",
+        ".git",
+        ".pytest_cache",
+        ".mypy_cache",
+        ".venv",
+        "venv",
+    }
+    
+    for scan_dir in scan_dirs:
+        if not Path(scan_dir).exists():
+            continue
+            
+        for file_path in Path(scan_dir).rglob("*.py"):
+            # Skip files in excluded directories
+            if any(d in file_path.parts for d in skip_dirs):
+                continue
+                
+            fix_line_length(file_path)
 
 
 if __name__ == "__main__":

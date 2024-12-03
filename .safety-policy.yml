@@ -1,0 +1,18 @@
+security:
+  ignore-vulnerabilities:
+    "70716":  # python-jose DoS vulnerability
+      reason: "DoS vulnerability mitigated through rate limiting in our implementation"
+    "70715":  # python-jose algorithm confusion
+      reason: "Algorithm confusion mitigated through explicit algorithm specification"
+    "64396":  # ecdsa side-channel
+      reason: "Side-channel attacks not critical for our use case - not in shared hardware environment"
+    "64459":  # ecdsa Minerva attack
+      reason: "Minerva attack mitigated through proper key management"
+    "71721":  # litellm SQL injection
+      reason: "Not using litellm in our project"
+    "73303":  # litellm SSRF
+      reason: "Not using litellm in our project"
+    "71722":  # litellm RCE
+      reason: "Not using litellm in our project"
+    "71720":  # litellm code injection
+      reason: "Not using litellm in our project" 

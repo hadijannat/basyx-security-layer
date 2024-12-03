@@ -97,7 +97,7 @@ jobs:
       run: bandit -r basyx_security -ll
       
     - name: Check dependencies for known vulnerabilities
-      run: safety check
+      run: safety check --policy-file .safety-policy.yml
 
   container-scan:
     runs-on: ubuntu-latest

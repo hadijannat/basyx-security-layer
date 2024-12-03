@@ -2,9 +2,15 @@
 """Basic example demonstrating BaSyx security features."""
 
 from basyx.aas import model
-from basyx_security.core import SecurityManager, SecurityLevel, AccessRight, create_security_context
-from basyx_security.aas_wrapper.secure_aas import SecureAAS
+
 from basyx_security.aas_wrapper.provider import DictProvider
+from basyx_security.aas_wrapper.secure_aas import SecureAAS
+from basyx_security.core import (
+    AccessRight,
+    SecurityLevel,
+    SecurityManager,
+    create_security_context,
+)
 
 
 def create_example_aas():

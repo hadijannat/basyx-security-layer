@@ -1054,7 +1054,8 @@ class ModelReferenceTest(unittest.TestCase):
             with self.assertRaises(model.AASConstraintViolation) as cm:
                 model.ModelReference(keys + (invalid_key,), model.Property)
             self.assertEqual(
-                f"Key {keys[1]!r} references a SubmodelElementList, but the value of the succeeding key "
+                f"Key {
+                    keys[1]!r} references a SubmodelElementList, but the value of the succeeding key "
                 f"({invalid_key!r}) is not a non-negative integer: {invalid_key.value} "
                 "(Constraint AASd-128)",
                 str(cm.exception),

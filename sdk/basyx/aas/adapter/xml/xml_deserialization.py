@@ -178,8 +178,12 @@ def _get_all_children_expect_tag(
     for child in parent:
         if child.tag != expected_tag:
             error_message = (
-                f"{_element_pretty_identifier(child)}, child of {_element_pretty_identifier(parent)}, "
-                f"doesn't match the expected tag {_tag_replace_namespace(expected_tag, child.nsmap)}!"
+                f"{
+                    _element_pretty_identifier(child)}, child of {
+                    _element_pretty_identifier(parent)}, "
+                f"doesn't match the expected tag {
+                    _tag_replace_namespace(
+                        expected_tag, child.nsmap)}!"
             )
             if not failsafe:
                 raise KeyError(error_message)
@@ -1439,7 +1443,8 @@ class AASFromXmlDecoder:
                     level_type_value = _str_to_bool(child.text)
                 except ValueError:
                     error_message = (
-                        f"levelType {tag} of {_element_pretty_identifier(element)} has invalid boolean: "
+                        f"levelType {tag} of {
+                            _element_pretty_identifier(element)} has invalid boolean: "
                         + str(child.text)
                     )
                     if not cls.failsafe:
